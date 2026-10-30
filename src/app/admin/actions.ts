@@ -141,6 +141,21 @@ export async function saveWeeklyHours(form: FormData) {
   done("/admin/hours");
 }
 
+export async function saveKitchenHours(form: FormData) {
+  const bar = await requireAdminBar();
+  let kitchenHours: Partial<Record<Weekday, DayHours>> | null = null;
+  if (text(form, "separate") === "true") {
+    kitchenHours = {};
+    for (let day = 0; day < 7; day++) {
+      const open = text(form, `kitchenOpen-${day}`);
+      const close = text(form, `kitchenClose-${day}`);
+      if (open && close) kitchenHours[day as Weekday] = { open, close };
+    }
+  }
+  await (await getStore()).updateBar(bar.id, { kitchenHours });
+  done("/admin/hours");
+}
+
 export async function saveHoursOverride(form: FormData) {
   const bar = await requireAdminBar();
   const closed = text(form, "closed") === "true";

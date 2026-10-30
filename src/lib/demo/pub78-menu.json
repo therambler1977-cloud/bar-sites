@@ -1,0 +1,152 @@
+[
+  {
+    "category": "Pub Snacks & Sides",
+    "name": "Cheese Curds",
+    "description": "Served with ranch. Also available tossed in Buffalo sauce.",
+    "price": "$10"
+  },
+  {
+    "category": "Pub Snacks & Sides",
+    "name": "Fried Pickle Chips",
+    "description": "Served with ranch.",
+    "price": "$9"
+  },
+  {
+    "category": "Pub Snacks & Sides",
+    "name": "Deep Fried Soft Pretzel Sticks (4) w/ Cheese",
+    "description": "",
+    "price": "$10"
+  },
+  {
+    "category": "Pub Snacks & Sides",
+    "name": "Basket of French Fries, Tator Tots, or Chips",
+    "description": "Add a cup of cheese $1.",
+    "price": "$5"
+  },
+  {
+    "category": "Pub Snacks & Sides",
+    "name": "Chicken Wings (8)",
+    "description": "Buffalo, Honey Hot, Teriyaki, or BBQ, with ranch or bleu cheese. Tossed or naked with sauce on the side.",
+    "price": "$12"
+  },
+  {
+    "category": "Pub Snacks & Sides",
+    "name": "Chicken Wings (12)",
+    "description": "Buffalo, Honey Hot, Teriyaki, or BBQ, with ranch or bleu cheese. Tossed or naked with sauce on the side.",
+    "price": "$15"
+  },
+  {
+    "category": "Pub Snacks & Sides",
+    "name": "Chicken Tenders",
+    "description": "3 tenders with fries or tots. Ranch, BBQ, Honey Hot, or Teriyaki for dippin'. Add a cup of cheese $1.",
+    "price": "$12"
+  },
+  {
+    "category": "Loaded Tots",
+    "name": "78's Loaded Tots",
+    "description": "Tator tots with melted cheddar, ground beef, grilled onions, diced pickles, and Thousand Island. Great for a meal!",
+    "price": "$11"
+  },
+  {
+    "category": "Chimi",
+    "name": "Italian Beef Chimi",
+    "description": "Italian beef, mozzarella, hot or mild giardiniera, with au jus on the side. Served with French Fries, Chips, or Tator Tots.",
+    "price": "$13"
+  },
+  {
+    "category": "Chimi",
+    "name": "Reuben Chimi",
+    "description": "Corned beef, Swiss, and sauerkraut, with Thousand Island on the side. Served with French Fries, Chips, or Tator Tots.",
+    "price": "$15"
+  },
+  {
+    "category": "Pizza",
+    "name": "16\" Thin Crust",
+    "description": "Toppings $1.00 each: sausage, pepperoni, onion, green peppers, black olives, jalape\u00f1os, mushrooms, hot or mild giardiniera.",
+    "price": "$18"
+  },
+  {
+    "category": "Pizza",
+    "name": "12\" Thin Crust",
+    "description": "Toppings $0.75 each: sausage, pepperoni, onion, green peppers, black olives, jalape\u00f1os, mushrooms, hot or mild giardiniera.",
+    "price": "$14"
+  },
+  {
+    "category": "Pizza",
+    "name": "Italian Beef Pizza (16\")",
+    "description": "Specialty: tomato sauce, Italian beef, mozzarella, hot or mild giardiniera.",
+    "price": "$22"
+  },
+  {
+    "category": "Pizza",
+    "name": "Italian Beef Pizza (12\")",
+    "description": "Specialty: tomato sauce, Italian beef, mozzarella, hot or mild giardiniera.",
+    "price": "$16"
+  },
+  {
+    "category": "Burgers",
+    "name": "Pub Burger",
+    "description": "Lettuce, tomato, onion, and pickle. Add a patty $3, cheese $1 (cheddar, Swiss, or American), or bacon $2. Served with French Fries, Chips, or Tots.",
+    "price": "$10"
+  },
+  {
+    "category": "Burgers",
+    "name": "Amarillo Burger",
+    "description": "Lettuce, tomato, onion, pickle, cheddar, bacon, grilled dilled or fresh jalape\u00f1os, and BBQ sauce. Served with French Fries, Chips, or Tots.",
+    "price": "$13"
+  },
+  {
+    "category": "Burgers",
+    "name": "Island Burger",
+    "description": "American cheese, lettuce, onion, pickle, and Thousand Island. Served with French Fries, Chips, or Tots.",
+    "price": "$11"
+  },
+  {
+    "category": "Grilled Cheese",
+    "name": "Grilled Cheese",
+    "description": "Five slices of American, Swiss, or cheddar on sourdough. Add bacon $3 or tomato $1. Served with French Fries, Chips, or Tots.",
+    "price": "$10"
+  },
+  {
+    "category": "Grilled Cheese",
+    "name": "Italian Beef Grilled Cheese",
+    "description": "Italian beef, mozzarella, and hot or mild giardiniera on sourdough. Served with French Fries, Chips, or Tots.",
+    "price": "$13"
+  },
+  {
+    "category": "Sandwiches",
+    "name": "Jen's Fav",
+    "description": "Corned beef, Swiss, cole slaw, and Thousand Island on grilled rye. Served with French Fries, Chips, or Tots.",
+    "price": "$15"
+  },
+  {
+    "category": "Sandwiches",
+    "name": "Reuben",
+    "description": "Corned beef, Swiss, sauerkraut, and Thousand Island on grilled rye. Served with French Fries, Chips, or Tots.",
+    "price": "$15"
+  },
+  {
+    "category": "Sandwiches",
+    "name": "Patty Melt",
+    "description": "Burger, American cheese, and grilled onions on grilled rye. Served with French Fries, Chips, or Tots.",
+    "price": "$12"
+  },
+  {
+    "category": "Sandwiches",
+    "name": "BLT",
+    "description": "Bacon, lettuce, tomato, and mayo on sourdough. Add double bacon $3 or cheese $1. Served with French Fries, Chips, or Tots.",
+    "price": "$12"
+  },
+  {
+    "category": "Sandwiches",
+    "name": "Pub Club",
+    "description": "Turkey, ham, bacon, lettuce, tomato, and mayo on sourdough or a wrap. Add cheese $1. Served with French Fries, Chips, or Tots.",
+    "price": "$15"
+  },
+  {
+    "category": "Sandwiches",
+    "name": "Buffalo Chicken Wrap",
+    "description": "Crispy chicken tossed in Buffalo, cheddar, tomato, lettuce, with bleu cheese or ranch. Served with French Fries, Chips, or Tots.",
+    "price": "$13"
+  }
+]

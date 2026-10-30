@@ -93,7 +93,7 @@ describe("toParsedUpdate", () => {
 
 describe("helpers", () => {
   it("matches menu items loosely", () => {
-    const items = seedData().menuItems;
+    const items = seedData().menuItems.filter((i) => i.barId === "demo-bar");
     expect(findMenuItem(items, "anchor burger")?.name).toBe("Anchor Burger");
     expect(findMenuItem(items, "pizza")).toBeNull();
   });

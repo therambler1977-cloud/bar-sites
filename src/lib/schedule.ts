@@ -94,20 +94,16 @@ export type OpenStatus =
   | { open: true; closesAt: string }
   | { open: false; opensAt: string | null; opensOn: string | null };
 
-/** Whether the bar is open right now, handling hours that run past midnight. */
-export function openStatus(
-  bar: Pick<Bar, "weeklyHours">,
-  overrides: HoursOverride[],
-  now: LocalNow,
-): OpenStatus {
+/** Open or closed right now for any daily schedule, handling hours that run past midnight. */
+function statusFrom(hoursFor: (date: string) => DayHours | null, now: LocalNow): OpenStatus {
   // Last night's hours may still be running after midnight.
-  const yesterday = hoursOn(bar, overrides, addDays(now.date, -1));
+  const yesterday = hoursFor(addDays(now.date, -1));
   if (yesterday && toMinutes(yesterday.close) <= toMinutes(yesterday.open)) {
     if (now.minutes < toMinutes(yesterday.close)) {
       return { open: true, closesAt: yesterday.close };
     }
   }
-  const today = hoursOn(bar, overrides, now.date);
+  const today = hoursFor(now.date);
   if (today) {
     const open = toMinutes(today.open);
     const close = toMinutes(today.close);
@@ -121,10 +117,41 @@ export function openStatus(
   }
   for (let i = 1; i <= 7; i++) {
     const date = addDays(now.date, i);
-    const hours = hoursOn(bar, overrides, date);
+    const hours = hoursFor(date);
     if (hours) return { open: false, opensAt: hours.open, opensOn: date };
   }
   return { open: false, opensAt: null, opensOn: null };
+}
+
+/** Whether the bar is open right now. */
+export function openStatus(
+  bar: Pick<Bar, "weeklyHours">,
+  overrides: HoursOverride[],
+  now: LocalNow,
+): OpenStatus {
+  return statusFrom((date) => hoursOn(bar, overrides, date), now);
+}
+
+/** Kitchen hours for a date. A closed day or holiday closure closes the kitchen too. */
+export function kitchenHoursOn(
+  bar: Pick<Bar, "weeklyHours" | "kitchenHours">,
+  overrides: HoursOverride[],
+  date: string,
+): DayHours | null {
+  const barHours = hoursOn(bar, overrides, date);
+  if (!barHours || !bar.kitchenHours) return barHours;
+  // A one-off hours change wins over the regular kitchen schedule for that day.
+  if (overrides.some((o) => o.date === date)) return barHours;
+  return bar.kitchenHours[weekdayOf(date)] ?? null;
+}
+
+/** Whether the kitchen is serving right now. */
+export function kitchenStatus(
+  bar: Pick<Bar, "weeklyHours" | "kitchenHours">,
+  overrides: HoursOverride[],
+  now: LocalNow,
+): OpenStatus {
+  return statusFrom((date) => kitchenHoursOn(bar, overrides, date), now);
 }
 
 export function specialRunsOn(special: Special, date: string): boolean {

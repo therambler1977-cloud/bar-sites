@@ -9,6 +9,8 @@ import {
   formatDate,
   formatTime,
   hoursOn,
+  kitchenHoursOn,
+  kitchenStatus,
   localNow,
   openStatus,
   specialsOn,
@@ -44,6 +46,7 @@ export default async function BarHome() {
 
   const now = localNow(new Date(), bar.timezone);
   const status = openStatus(bar, overrides, now);
+  const kitchen = bar.kitchenHours ? kitchenStatus(bar, overrides, now) : null;
   const todaysSpecials = specialsOn(specials, now.date);
   const upcoming = upcomingEvents(events, now.date);
   const tonight = upcoming.filter((e) => e.date === now.date);
@@ -107,6 +110,15 @@ export default async function BarHome() {
         <section className="wrap today" aria-labelledby="today-heading">
           <div className="board">
             <h2 id="today-heading" className="eyebrow">Today · {WEEKDAY_NAMES[now.weekday]}</h2>
+            {kitchen && (
+              <p className={`kitchen ${kitchen.open ? "is-open" : ""}`}>
+                {kitchen.open
+                  ? `Kitchen open until ${formatTime(kitchen.closesAt)}`
+                  : kitchen.opensOn === now.date && kitchen.opensAt
+                    ? `Kitchen opens at ${formatTime(kitchen.opensAt)}`
+                    : "Kitchen closed"}
+              </p>
+            )}
             {todaysSpecials.length === 0 && tonight.length === 0 ? (
               <p className="muted">No specials today. Check out what's coming up below.</p>
             ) : (
@@ -204,15 +216,28 @@ export default async function BarHome() {
         <section className="wrap" id="hours" aria-labelledby="hours-heading">
           <h2 id="hours-heading">Hours</h2>
           <table className="hours">
+            {bar.kitchenHours && (
+              <thead>
+                <tr>
+                  <td />
+                  <th scope="col">Bar</th>
+                  <th scope="col">Kitchen</th>
+                </tr>
+              </thead>
+            )}
             <tbody>
               {Array.from({ length: 7 }, (_, i) => {
                 const date = addDays(now.date, i);
                 const day = ((now.weekday + i) % 7) as Weekday;
                 const hours = hoursOn(bar, overrides, date);
+                const food = kitchenHoursOn(bar, overrides, date);
                 return (
                   <tr key={date} className={i === 0 ? "is-today" : ""}>
                     <th scope="row">{i === 0 ? "Today" : WEEKDAY_NAMES[day]}</th>
                     <td>{hours ? `${formatTime(hours.open)}–${formatTime(hours.close)}` : "Closed"}</td>
+                    {bar.kitchenHours && (
+                      <td>{food ? `${formatTime(food.open)}–${formatTime(food.close)}` : "—"}</td>
+                    )}
                   </tr>
                 );
               })}

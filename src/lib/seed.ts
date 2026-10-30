@@ -1,10 +1,48 @@
 import { hashPassword } from "./auth";
 import { addDays, localNow } from "./schedule";
 import type { Database } from "./store";
-import type { MenuItem } from "./types";
+import type { Bar, MenuItem } from "./types";
+import pub78Menu from "./demo/pub78-menu.json";
 
 const BAR_ID = "demo-bar";
+const PUB78_ID = "pub-78";
 const TIMEZONE = "America/Chicago";
+
+// Concept demo for a pitch to Pub 78 (Brookfield, IL). Real menu and hours, no
+// specials or events yet. Served only via DEFAULT_BAR_SLUG=pub-78 or the
+// pub78.localhost domain, never on the bar's real domain.
+function pub78Bar(): Bar {
+  return {
+    id: PUB78_ID,
+    slug: "pub-78",
+    name: "Pub 78",
+    tagline: "Your neighborhood bar on Grand Boulevard in Brookfield.",
+    timezone: TIMEZONE,
+    phone: "(708) 255-5542",
+    address: "3733 Grand Boulevard, Brookfield, IL 60513",
+    domains: ["pub78.localhost"],
+    accentColor: "#7cc242",
+    orderUrl: null,
+    smsNumber: null,
+    ownerPhones: [],
+    adminPasswordHash: hashPassword("demo1234"),
+    weeklyHours: {
+      3: { open: "16:00", close: "00:00" },
+      4: { open: "16:00", close: "00:00" },
+      5: { open: "16:00", close: "01:00" },
+      6: { open: "15:00", close: "01:00" },
+      0: { open: "12:00", close: "20:00" },
+    },
+    kitchenHours: {
+      3: { open: "16:00", close: "21:00" },
+      4: { open: "16:00", close: "21:00" },
+      5: { open: "16:00", close: "21:00" },
+      6: { open: "15:00", close: "21:00" },
+      0: { open: "12:00", close: "18:00" },
+    },
+    google: null,
+  };
+}
 
 /** A sample bar so the site and admin have something to show before real data exists. */
 export function seedData(now = new Date()): Database {
@@ -47,8 +85,10 @@ export function seedData(now = new Date()): Database {
           5: { open: "11:00", close: "02:00" },
           6: { open: "11:00", close: "02:00" },
         },
+        kitchenHours: null,
         google: null,
       },
+      pub78Bar(),
     ],
     events: [
       {
@@ -126,18 +166,29 @@ export function seedData(now = new Date()): Database {
         googlePostName: null,
       },
     ],
-    menuItems: menu.map(
-      ([category, name, description, price], i): MenuItem => ({
-        id: `item-${i + 1}`,
-        barId: BAR_ID,
-        category,
-        name,
-        description,
-        price,
-        available: true,
-        sortOrder: i,
-      }),
-    ),
+    menuItems: [
+      ...menu.map(
+        ([category, name, description, price], i): MenuItem => ({
+          id: `item-${i + 1}`,
+          barId: BAR_ID,
+          category,
+          name,
+          description,
+          price,
+          available: true,
+          sortOrder: i,
+        }),
+      ),
+      ...pub78Menu.map(
+        (item, i): MenuItem => ({
+          ...item,
+          id: `pub78-item-${i + 1}`,
+          barId: PUB78_ID,
+          available: true,
+          sortOrder: i,
+        }),
+      ),
+    ],
     hoursOverrides: [],
     pendingUpdates: [],
   };

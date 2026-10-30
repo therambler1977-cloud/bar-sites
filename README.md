@@ -18,6 +18,8 @@ npm run dev
 
 Open http://localhost:3000 for the demo bar (The Rusty Anchor) and http://localhost:3000/admin for its admin. The demo password is `demo1234`.
 
+To see the Pub 78 concept demo (real menu and hours), open http://pub78.localhost:3000 instead, or set `DEFAULT_BAR_SLUG=pub-78`. It uses the same admin password.
+
 Without Supabase settings, the app keeps its data in `.data/db.json`, which is created from sample data the first time it runs. Delete that file to reset the demo.
 
 ```bash
@@ -47,7 +49,7 @@ All settings are listed in `.env.example`.
 | Hours, specials, and event timing | `src/lib/schedule.ts` |
 | Data (Supabase or local file) | `src/lib/store.ts`, `supabase/migrations/` |
 
-Every date and time is stored in the bar's local time. Hours that run past midnight (for example 11am to 2am) are handled.
+Every date and time is stored in the bar's local time. Bars can set separate kitchen hours, and the site shows whether the kitchen is open. Hours that run past midnight (for example 11am to 2am) are handled.
 
 ## Next up
 
