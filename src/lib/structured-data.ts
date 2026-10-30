@@ -21,6 +21,7 @@ export function barJsonLd(bar: Bar, events: BarEvent[]) {
       ...place,
       description: bar.tagline,
       telephone: bar.phone,
+      ...(bar.logoUrl ? { logo: bar.logoUrl } : {}),
       openingHoursSpecification: Object.entries(bar.weeklyHours).map(([day, hours]) => ({
         "@type": "OpeningHoursSpecification",
         dayOfWeek: SCHEMA_DAYS[Number(day) as Weekday],

@@ -24,6 +24,7 @@ export interface Bar {
   address: string;
   domains: string[]; // custom domains that serve this bar's site
   accentColor: string;
+  logoUrl: string | null; // shown on a light card, so a logo with a white background works
   orderUrl: string | null; // the bar's existing online ordering page, if any
   smsNumber: string | null; // Twilio number the owner texts updates to
   ownerPhones: string[]; // numbers allowed to text updates, E.164
