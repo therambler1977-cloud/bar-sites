@@ -83,7 +83,13 @@ export default async function BarHome() {
       </header>
 
       <main id="top">
-        <section className="hero wrap">
+        <section className={`hero wrap ${bar.logoUrl ? "has-logo" : ""}`}>
+          {bar.logoUrl && (
+            <div className="logo-card">
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img src={bar.logoUrl} alt={`${bar.name} logo`} width={400} height={390} />
+            </div>
+          )}
           <h1>{bar.name}</h1>
           <p className="tagline">{bar.tagline}</p>
           <div className="actions">
