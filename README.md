@@ -28,6 +28,10 @@ npm run typecheck
 npm run build
 ```
 
+## Demo on Vercel
+
+Import the repo into Vercel and set two environment variables: `SESSION_SECRET` (any long random string) and `DEFAULT_BAR_SLUG=pub-78` (or `rusty-anchor`). Without Supabase, the demo data lives in the server's temp folder, so changes made in the admin can reset when Vercel restarts the server. That's fine for a pitch, but not for a real bar.
+
 ## Going live
 
 1. **Database:** create a Supabase project, run `supabase/migrations/0001_init.sql`, and set `SUPABASE_URL` and `SUPABASE_SERVICE_ROLE_KEY`. Add a row to `bars` for each client, with the bar's domain(s) in `domains`. To make the `admin_password_hash` value, run `hashPassword()` from `src/lib/auth.ts`.
@@ -53,7 +57,7 @@ Every date and time is stored in the bar's local time. Bars can set separate kit
 
 ## Next up
 
-- Native online ordering through the bar's POS (Square first)
+- Native online ordering through the bar's POS (Clover first)
 - Facebook and Instagram auto-posting
 - An in-app "Connect Google" button and owner self-signup
 - AI phone ordering

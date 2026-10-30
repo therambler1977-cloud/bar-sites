@@ -1,5 +1,6 @@
 import { randomUUID } from "node:crypto";
 import { promises as fs } from "node:fs";
+import os from "node:os";
 import path from "node:path";
 import { createClient, type SupabaseClient } from "@supabase/supabase-js";
 import type {
@@ -216,7 +217,10 @@ export async function getStore(): Promise<Store> {
   }
   // Re-read the file on every request: Next.js may serve pages and actions from
   // separate workers, and each must see the others' writes.
-  const file = path.join(process.cwd(), ".data", "db.json");
+  // Vercel's filesystem is read-only apart from the temp folder. Demo edits made there
+  // only last until the server instance restarts; use Supabase for anything real.
+  const dir = process.env.VERCEL ? path.join(os.tmpdir(), "bar-sites") : path.join(process.cwd(), ".data");
+  const file = path.join(dir, "db.json");
   try {
     return new MemoryStore(JSON.parse(await fs.readFile(file, "utf8")), file);
   } catch {
