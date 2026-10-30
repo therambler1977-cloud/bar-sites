@@ -18,7 +18,7 @@ import {
   upcomingEvents,
 } from "@/lib/schedule";
 import { barJsonLd } from "@/lib/structured-data";
-import type { MenuItem, Weekday } from "@/lib/types";
+import type { BarPhoto, MenuItem, Weekday } from "@/lib/types";
 
 // Specials, hours, and "open now" depend on the current time, so never cache this page.
 export const dynamic = "force-dynamic";
@@ -32,6 +32,19 @@ export async function generateMetadata(): Promise<Metadata> {
 function timeRange(start: string | null, end: string | null) {
   if (!start) return "All day";
   return end ? `${formatTime(start)}–${formatTime(end)}` : formatTime(start);
+}
+
+function PhotoList({ photos }: { photos: BarPhoto[] }) {
+  return (
+    <ul className="photos">
+      {photos.map((photo) => (
+        <li key={photo.src}>
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img src={photo.src} alt={photo.alt} loading="lazy" />
+        </li>
+      ))}
+    </ul>
+  );
 }
 
 export default async function BarHome() {
@@ -52,6 +65,8 @@ export default async function BarHome() {
   const upcoming = upcomingEvents(events, now.date);
   const tonight = upcoming.filter((e) => e.date === now.date);
   const recent = recentEvents(events, now.date);
+  const musicPhotos = (bar.photos ?? []).filter((p) => (p.kind ?? "music") === "music");
+  const venuePhotos = (bar.photos ?? []).filter((p) => p.kind === "venue");
   const weekly = specials.filter((s) => s.active && !s.date);
   const notices = overrides
     .filter((o) => o.date >= now.date && o.date <= addDays(now.date, 14))
@@ -193,17 +208,10 @@ export default async function BarHome() {
           )}
         </section>
 
-        {bar.photos?.length > 0 && (
+        {musicPhotos.length > 0 && (
           <section className="wrap" id="live-music" aria-labelledby="photos-heading">
             <h2 id="photos-heading">Live music</h2>
-            <ul className="photos">
-              {bar.photos.map((photo, i) => (
-                <li key={photo.src}>
-                  {/* eslint-disable-next-line @next/next/no-img-element */}
-                  <img src={photo.src} alt={photo.alt} loading={i < 2 ? "eager" : "lazy"} />
-                </li>
-              ))}
-            </ul>
+            <PhotoList photos={musicPhotos} />
           </section>
         )}
 
@@ -245,6 +253,13 @@ export default async function BarHome() {
                 </div>
               ))}
             </div>
+          </section>
+        )}
+
+        {venuePhotos.length > 0 && (
+          <section className="wrap" id="the-bar" aria-labelledby="venue-heading">
+            <h2 id="venue-heading">The bar</h2>
+            <PhotoList photos={venuePhotos} />
           </section>
         )}
 

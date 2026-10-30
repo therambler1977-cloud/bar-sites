@@ -17,6 +17,8 @@ export interface GoogleLink {
 export interface BarPhoto {
   src: string;
   alt: string;
+  // "music" goes in the Live music section, "venue" (inside and outside) in The bar.
+  kind?: "music" | "venue"; // missing = music, for photos saved before venue photos existed
 }
 
 export interface Bar {
@@ -30,7 +32,7 @@ export interface Bar {
   domains: string[]; // custom domains that serve this bar's site
   accentColor: string;
   logoUrl: string | null; // shown on a light card, so a logo with a white background works
-  photos: BarPhoto[]; // live music and atmosphere shots, shown in order
+  photos: BarPhoto[]; // live music and venue shots, shown in order within each section
   orderUrl: string | null; // the bar's existing online ordering page, if any
   smsNumber: string | null; // Twilio number the owner texts updates to
   ownerPhones: string[]; // numbers allowed to text updates, E.164
