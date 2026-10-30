@@ -14,6 +14,7 @@ import {
   localNow,
   openStatus,
   specialsOn,
+  recentEvents,
   upcomingEvents,
 } from "@/lib/schedule";
 import { barJsonLd } from "@/lib/structured-data";
@@ -50,6 +51,7 @@ export default async function BarHome() {
   const todaysSpecials = specialsOn(specials, now.date);
   const upcoming = upcomingEvents(events, now.date);
   const tonight = upcoming.filter((e) => e.date === now.date);
+  const recent = recentEvents(events, now.date);
   const weekly = specials.filter((s) => s.active && !s.date);
   const notices = overrides
     .filter((o) => o.date >= now.date && o.date <= addDays(now.date, 14))
@@ -175,6 +177,19 @@ export default async function BarHome() {
                 );
               })}
             </ol>
+          )}
+          {recent.length > 0 && (
+            <>
+              <h3 className="recent-heading">Recently</h3>
+              <ul className="recent-events">
+                {recent.map((e) => (
+                  <li key={e.id}>
+                    <span className="recent-date">{formatDate(e.date)}</span>
+                    <span>{e.title}</span>
+                  </li>
+                ))}
+              </ul>
+            </>
           )}
         </section>
 

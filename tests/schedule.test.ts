@@ -8,6 +8,7 @@ import {
   localNow,
   openStatus,
   specialsOn,
+  recentEvents,
   upcomingEvents,
   utcOffset,
   weekdayOf,
@@ -65,20 +66,30 @@ describe("openStatus", () => {
 
 describe("specials and events", () => {
   it("shows recurring specials only on their days", () => {
-    const tuesday = specialsOn(db.specials, "2026-11-03").map((s) => s.title);
+    const demoSpecials = db.specials.filter((s) => s.barId === "demo-bar");
+    const tuesday = specialsOn(demoSpecials, "2026-11-03").map((s) => s.title);
     expect(tuesday).toEqual(["Happy Hour", "Taco Tuesday"]);
-    expect(specialsOn(db.specials, "2026-11-01")).toEqual([]);
+    expect(specialsOn(demoSpecials, "2026-11-01")).toEqual([]);
   });
 
   it("lists today's and future events, soonest first", () => {
-    const events = upcomingEvents(db.events, "2026-10-30");
+    const demoEvents = db.events.filter((e) => e.barId === "demo-bar");
+    const events = upcomingEvents(demoEvents, "2026-10-30");
     expect(events.map((e) => e.title)).toEqual(["The Rusty Nails (live)", "Pub Trivia", "Karaoke Night"]);
-    expect(upcomingEvents(db.events, "2026-10-31").map((e) => e.title)).toEqual(["Pub Trivia", "Karaoke Night"]);
+    expect(upcomingEvents(demoEvents, "2026-10-31").map((e) => e.title)).toEqual(["Pub Trivia", "Karaoke Night"]);
+  });
+
+  it("lists the most recent past events, newest first", () => {
+    const pub78 = db.events.filter((e) => e.barId === "pub-78");
+    expect(recentEvents(pub78, "2026-10-30", 3).map((e) => e.date)).toEqual(["2026-10-29", "2026-10-28", "2026-10-17"]);
+    expect(recentEvents(pub78, "2026-09-27")).toEqual([]);
   });
 
   it("describes day sets in plain words", () => {
     expect(describeDays([1, 2, 3, 4, 5])).toBe("Weekdays");
     expect(describeDays([2])).toBe("Tuesday");
+    expect(describeDays([0, 3, 4, 5, 6])).toBe("Wednesday–Sunday");
+    expect(describeDays([1, 3, 5])).toBe("Monday, Wednesday, Friday");
   });
 });
 

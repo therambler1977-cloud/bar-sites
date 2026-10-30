@@ -174,6 +174,14 @@ export function upcomingEvents(events: BarEvent[], today: string, limit = 12): B
     .slice(0, limit);
 }
 
+/** The most recent events before today, newest first. */
+export function recentEvents(events: BarEvent[], today: string, limit = 6): BarEvent[] {
+  return events
+    .filter((e) => e.date < today)
+    .sort((a, b) => (b.date + b.startTime).localeCompare(a.date + a.startTime))
+    .slice(0, limit);
+}
+
 /** "-05:00" style UTC offset for a local date in a timezone, for schema.org dates. */
 export function utcOffset(date: string, timezone: string): string {
   const [y, m, d] = date.split("-").map(Number);
@@ -191,5 +199,12 @@ export function describeDays(days: Weekday[]): string {
   const sorted = [...days].sort();
   if (sorted.join() === "1,2,3,4,5") return "Weekdays";
   if (sorted.join() === "0,6") return "Weekends";
+  // Three or more days in a row, even across the weekend, read as a range: "Wednesday–Sunday".
+  const set = new Set(days);
+  const starts = days.filter((d) => !set.has(((d + 6) % 7) as Weekday));
+  if (days.length >= 3 && starts.length === 1) {
+    const end = (starts[0] + days.length - 1) % 7;
+    return `${WEEKDAY_NAMES[starts[0]]}–${WEEKDAY_NAMES[end]}`;
+  }
   return sorted.map((d) => WEEKDAY_NAMES[d]).join(", ");
 }
