@@ -10,7 +10,7 @@ const PUB78_ID = "pub-78";
 const TIMEZONE = "America/Chicago";
 
 // Concept demo for a pitch to Pub 78 (Brookfield, IL). Real menu, hours, and
-// October 2026 events; no specials yet. Served only via DEFAULT_BAR_SLUG=pub-78 or the
+// October 2026 events and specials. Served only via DEFAULT_BAR_SLUG=pub-78 or the
 // pub78.localhost domain, never on the bar's real domain.
 function pub78Bar(): Bar {
   return {
@@ -174,6 +174,32 @@ export function seedData(now = new Date()): Database {
         description: "Every flavor, all night.",
         price: "75¢ wings",
         days: [4],
+        date: null,
+        startTime: null,
+        endTime: null,
+        active: true,
+        googlePostName: null,
+      },
+      {
+        id: "pub78-sp-1",
+        barId: PUB78_ID,
+        title: "Happy Hour",
+        description: "",
+        price: "$3 draft beers",
+        days: [0, 3, 4, 5, 6],
+        date: null,
+        startTime: "15:00",
+        endTime: "17:00",
+        active: true,
+        googlePostName: null,
+      },
+      {
+        id: "pub78-sp-2",
+        barId: PUB78_ID,
+        title: "2nd Pizza 50% Off",
+        description: "Order two pizzas and the second is half price.",
+        price: null,
+        days: [0, 3, 4, 5, 6],
         date: null,
         startTime: null,
         endTime: null,

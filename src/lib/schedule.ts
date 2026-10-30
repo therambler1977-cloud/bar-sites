@@ -199,5 +199,12 @@ export function describeDays(days: Weekday[]): string {
   const sorted = [...days].sort();
   if (sorted.join() === "1,2,3,4,5") return "Weekdays";
   if (sorted.join() === "0,6") return "Weekends";
+  // Three or more days in a row, even across the weekend, read as a range: "Wednesday–Sunday".
+  const set = new Set(days);
+  const starts = days.filter((d) => !set.has(((d + 6) % 7) as Weekday));
+  if (days.length >= 3 && starts.length === 1) {
+    const end = (starts[0] + days.length - 1) % 7;
+    return `${WEEKDAY_NAMES[starts[0]]}–${WEEKDAY_NAMES[end]}`;
+  }
   return sorted.map((d) => WEEKDAY_NAMES[d]).join(", ");
 }

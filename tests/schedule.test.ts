@@ -66,9 +66,10 @@ describe("openStatus", () => {
 
 describe("specials and events", () => {
   it("shows recurring specials only on their days", () => {
-    const tuesday = specialsOn(db.specials, "2026-11-03").map((s) => s.title);
+    const demoSpecials = db.specials.filter((s) => s.barId === "demo-bar");
+    const tuesday = specialsOn(demoSpecials, "2026-11-03").map((s) => s.title);
     expect(tuesday).toEqual(["Happy Hour", "Taco Tuesday"]);
-    expect(specialsOn(db.specials, "2026-11-01")).toEqual([]);
+    expect(specialsOn(demoSpecials, "2026-11-01")).toEqual([]);
   });
 
   it("lists today's and future events, soonest first", () => {
@@ -87,6 +88,8 @@ describe("specials and events", () => {
   it("describes day sets in plain words", () => {
     expect(describeDays([1, 2, 3, 4, 5])).toBe("Weekdays");
     expect(describeDays([2])).toBe("Tuesday");
+    expect(describeDays([0, 3, 4, 5, 6])).toBe("Wednesday–Sunday");
+    expect(describeDays([1, 3, 5])).toBe("Monday, Wednesday, Friday");
   });
 });
 
