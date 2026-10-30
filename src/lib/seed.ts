@@ -1,15 +1,16 @@
 import { hashPassword } from "./auth";
 import { addDays, localNow } from "./schedule";
 import type { Database } from "./store";
-import type { Bar, MenuItem } from "./types";
+import type { Bar, BarEvent, MenuItem } from "./types";
 import pub78Menu from "./demo/pub78-menu.json";
+import pub78Events from "./demo/pub78-events.json";
 
 const BAR_ID = "demo-bar";
 const PUB78_ID = "pub-78";
 const TIMEZONE = "America/Chicago";
 
-// Concept demo for a pitch to Pub 78 (Brookfield, IL). Real menu and hours, no
-// specials or events yet. Served only via DEFAULT_BAR_SLUG=pub-78 or the
+// Concept demo for a pitch to Pub 78 (Brookfield, IL). Real menu, hours, and
+// October 2026 events; no specials yet. Served only via DEFAULT_BAR_SLUG=pub-78 or the
 // pub78.localhost domain, never on the bar's real domain.
 function pub78Bar(): Bar {
   return {
@@ -135,6 +136,9 @@ export function seedData(now = new Date()): Database {
         cover: "Free",
         googlePostName: null,
       },
+      ...pub78Events.map(
+        (event, i): BarEvent => ({ ...event, id: `pub78-event-${i + 1}`, barId: PUB78_ID, googlePostName: null }),
+      ),
     ],
     specials: [
       {
@@ -200,7 +204,17 @@ export function seedData(now = new Date()): Database {
         }),
       ),
     ],
-    hoursOverrides: [],
+    hoursOverrides: [
+      {
+        id: "pub78-override-1",
+        barId: PUB78_ID,
+        date: "2026-10-25",
+        closed: true,
+        open: null,
+        close: null,
+        note: "Closed for a private event",
+      },
+    ],
     pendingUpdates: [],
   };
 }

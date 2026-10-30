@@ -174,6 +174,14 @@ export function upcomingEvents(events: BarEvent[], today: string, limit = 12): B
     .slice(0, limit);
 }
 
+/** The most recent events before today, newest first. */
+export function recentEvents(events: BarEvent[], today: string, limit = 6): BarEvent[] {
+  return events
+    .filter((e) => e.date < today)
+    .sort((a, b) => (b.date + b.startTime).localeCompare(a.date + a.startTime))
+    .slice(0, limit);
+}
+
 /** "-05:00" style UTC offset for a local date in a timezone, for schema.org dates. */
 export function utcOffset(date: string, timezone: string): string {
   const [y, m, d] = date.split("-").map(Number);
