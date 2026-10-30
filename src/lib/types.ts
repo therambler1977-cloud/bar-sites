@@ -14,6 +14,11 @@ export interface GoogleLink {
   refreshToken: string;
 }
 
+export interface BarPhoto {
+  src: string;
+  alt: string;
+}
+
 export interface Bar {
   id: string;
   slug: string;
@@ -25,6 +30,7 @@ export interface Bar {
   domains: string[]; // custom domains that serve this bar's site
   accentColor: string;
   logoUrl: string | null; // shown on a light card, so a logo with a white background works
+  photos: BarPhoto[]; // live music and atmosphere shots, shown in order
   orderUrl: string | null; // the bar's existing online ordering page, if any
   smsNumber: string | null; // Twilio number the owner texts updates to
   ownerPhones: string[]; // numbers allowed to text updates, E.164

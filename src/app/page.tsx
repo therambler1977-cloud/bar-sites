@@ -178,6 +178,20 @@ export default async function BarHome() {
           )}
         </section>
 
+        {bar.photos?.length > 0 && (
+          <section className="wrap" id="live-music" aria-labelledby="photos-heading">
+            <h2 id="photos-heading">Live music</h2>
+            <ul className="photos">
+              {bar.photos.map((photo, i) => (
+                <li key={photo.src}>
+                  {/* eslint-disable-next-line @next/next/no-img-element */}
+                  <img src={photo.src} alt={photo.alt} loading={i < 2 ? "eager" : "lazy"} />
+                </li>
+              ))}
+            </ul>
+          </section>
+        )}
+
         {weekly.length > 0 && (
           <section className="wrap" id="specials" aria-labelledby="specials-heading">
             <h2 id="specials-heading">Weekly specials</h2>
