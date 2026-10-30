@@ -101,6 +101,10 @@ ul, ol { list-style: none; margin: 0; padding: 0; }
   border-radius: 16px;
   padding: 1.5rem;
 }
+.kitchen { display: inline-flex; align-items: center; gap: 0.5rem; color: var(--muted); margin-bottom: 1rem; }
+.kitchen::before { content: ""; width: 8px; height: 8px; border-radius: 50%; background: var(--muted); }
+.kitchen.is-open { color: var(--text); }
+.kitchen.is-open::before { background: var(--ok); }
 .today-list { display: grid; gap: 0.75rem; }
 .today-list li { display: grid; grid-template-columns: 7.5rem 1fr auto; gap: 1rem; align-items: baseline; }
 .today-time { color: var(--muted); font-variant-numeric: tabular-nums; }
@@ -133,6 +137,8 @@ ul, ol { list-style: none; margin: 0; padding: 0; }
 .hours { border-collapse: collapse; width: 100%; max-width: 26rem; font-variant-numeric: tabular-nums; }
 .hours th, .hours td { padding: 0.6rem 0; border-bottom: 1px solid var(--line); text-align: left; font-weight: 400; }
 .hours th { padding-right: 1.5rem; }
+.hours thead th { font-size: 0.8rem; font-weight: 600; letter-spacing: 0.1em; text-transform: uppercase; color: var(--muted); text-align: right; }
+.hours td + td { padding-left: 1.5rem; }
 .hours td { text-align: right; white-space: nowrap; }
 .hours .is-today { color: var(--accent); font-weight: 600; }
 .hours .is-today th { font-weight: 600; }

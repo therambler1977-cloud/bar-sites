@@ -3,6 +3,8 @@ import {
   addDays,
   describeDays,
   hoursOn,
+  kitchenHoursOn,
+  kitchenStatus,
   localNow,
   openStatus,
   specialsOn,
@@ -77,5 +79,32 @@ describe("specials and events", () => {
   it("describes day sets in plain words", () => {
     expect(describeDays([1, 2, 3, 4, 5])).toBe("Weekdays");
     expect(describeDays([2])).toBe("Tuesday");
+  });
+});
+
+describe("kitchen hours", () => {
+  const pub78 = seedData(new Date("2026-10-29T17:00:00Z")).bars.find((b) => b.slug === "pub-78")!;
+
+  it("closes the kitchen before the bar", () => {
+    // Friday 2026-10-30: bar 4pm-1am, kitchen 4pm-9pm.
+    expect(kitchenStatus(pub78, [], { date: "2026-10-30", weekday: 5, minutes: 20 * 60 })).toEqual({
+      open: true,
+      closesAt: "21:00",
+    });
+    const late = kitchenStatus(pub78, [], { date: "2026-10-30", weekday: 5, minutes: 22 * 60 });
+    expect(late).toMatchObject({ open: false, opensOn: "2026-10-31", opensAt: "15:00" });
+    expect(openStatus(pub78, [], { date: "2026-10-30", weekday: 5, minutes: 22 * 60 }).open).toBe(true);
+  });
+
+  it("is closed on days the bar is closed", () => {
+    expect(kitchenHoursOn(pub78, [], "2026-11-02")).toBeNull(); // Monday
+    const closed = [
+      { id: "o", barId: pub78.id, date: "2026-11-26", closed: true, open: null, close: null, note: "" },
+    ];
+    expect(kitchenHoursOn(pub78, closed, "2026-11-26")).toBeNull();
+  });
+
+  it("follows bar hours when the bar has no separate kitchen hours", () => {
+    expect(kitchenHoursOn(bar, [], "2026-10-30")).toEqual({ open: "11:00", close: "02:00" });
   });
 });

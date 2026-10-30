@@ -2,7 +2,12 @@ import { requireAdminBar } from "@/lib/admin";
 import { getStore } from "@/lib/store";
 import { WEEKDAY_NAMES, formatDate, formatTime, localNow } from "@/lib/schedule";
 import type { Weekday } from "@/lib/types";
-import { deleteHoursOverride, saveHoursOverride, saveWeeklyHours } from "../../actions";
+import {
+  deleteHoursOverride,
+  saveHoursOverride,
+  saveKitchenHours,
+  saveWeeklyHours,
+} from "../../actions";
 
 // Monday first, the way owners think about the week.
 const WEEK: Weekday[] = [1, 2, 3, 4, 5, 6, 0];
@@ -84,6 +89,36 @@ export default async function HoursPage() {
           <p className="muted">Unchecked days show as closed. A closing time after midnight is fine.</p>
           <div className="actions">
             <button className="button primary" type="submit">Save hours</button>
+          </div>
+        </form>
+      </section>
+
+      <section className="panel">
+        <h2>Kitchen hours</h2>
+        <p className="muted">When food is served, if it stops before the bar closes.</p>
+        <form action={saveKitchenHours} className="form">
+          <fieldset className="choice">
+            <legend>Kitchen</legend>
+            <label><input type="radio" name="separate" value="false" defaultChecked={!bar.kitchenHours} /> Same as bar hours</label>
+            <label><input type="radio" name="separate" value="true" defaultChecked={Boolean(bar.kitchenHours)} /> Its own hours:</label>
+          </fieldset>
+          <table className="hours-edit">
+            <tbody>
+              {WEEK.map((day) => {
+                const hours = bar.kitchenHours?.[day];
+                return (
+                  <tr key={day}>
+                    <th scope="row">{WEEKDAY_NAMES[day].slice(0, 3)}</th>
+                    <td><input aria-label={`${WEEKDAY_NAMES[day]} kitchen opens`} name={`kitchenOpen-${day}`} type="time" defaultValue={hours?.open ?? ""} /></td>
+                    <td><input aria-label={`${WEEKDAY_NAMES[day]} kitchen closes`} name={`kitchenClose-${day}`} type="time" defaultValue={hours?.close ?? ""} /></td>
+                  </tr>
+                );
+              })}
+            </tbody>
+          </table>
+          <p className="muted">Leave a day blank if the kitchen is closed that day.</p>
+          <div className="actions">
+            <button className="button primary" type="submit">Save kitchen hours</button>
           </div>
         </form>
       </section>

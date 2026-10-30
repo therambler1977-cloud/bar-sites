@@ -29,6 +29,8 @@ export interface Bar {
   ownerPhones: string[]; // numbers allowed to text updates, E.164
   adminPasswordHash: string; // scrypt, see auth.ts
   weeklyHours: Partial<Record<Weekday, DayHours>>; // missing day = closed
+  // When food is served, if it differs from bar hours. null = kitchen follows bar hours.
+  kitchenHours: Partial<Record<Weekday, DayHours>> | null;
   google: GoogleLink | null;
 }
 
