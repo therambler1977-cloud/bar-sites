@@ -66,6 +66,7 @@ export default async function BarHome() {
   const tonight = upcoming.filter((e) => e.date === now.date);
   const recent = recentEvents(events, now.date);
   const musicPhotos = (bar.photos ?? []).filter((p) => (p.kind ?? "music") === "music");
+  const reviews = bar.reviews ?? [];
   const venuePhotos = (bar.photos ?? []).filter((p) => p.kind === "venue");
   const weekly = specials.filter((s) => s.active && !s.date);
   const notices = overrides
@@ -81,6 +82,7 @@ export default async function BarHome() {
   const sections = [
     ["events", "Events", true],
     ["live-music", "Live music", musicPhotos.length > 0],
+    ["reviews", "Reviews", reviews.length > 0],
     ["specials", "Specials", weekly.length > 0],
     ["menu", "Menu", categories.size > 0],
     ["the-bar", "The bar", venuePhotos.length > 0],
@@ -238,6 +240,22 @@ export default async function BarHome() {
           <section className="wrap" id="live-music" aria-labelledby="photos-heading">
             <h2 id="photos-heading">Live music</h2>
             <PhotoList photos={musicPhotos} />
+          </section>
+        )}
+
+        {reviews.length > 0 && (
+          <section className="wrap" id="reviews" aria-labelledby="reviews-heading">
+            <h2 id="reviews-heading">What people say</h2>
+            <ul className="reviews">
+              {reviews.map((r) => (
+                <li key={r.author + r.quote.slice(0, 20)}>
+                  <figure className="review">
+                    <blockquote>{r.quote}</blockquote>
+                    <figcaption>{r.author}{r.source ? ` · ${r.source} review` : ""}</figcaption>
+                  </figure>
+                </li>
+              ))}
+            </ul>
           </section>
         )}
 

@@ -21,6 +21,12 @@ export interface BarPhoto {
   kind?: "music" | "venue"; // missing = music, for photos saved before venue photos existed
 }
 
+export interface Review {
+  quote: string;
+  author: string; // first name and last initial, e.g. "Kerry O."
+  source: string | null; // e.g. "Google"; null when unknown
+}
+
 export interface Bar {
   id: string;
   slug: string;
@@ -35,6 +41,7 @@ export interface Bar {
   heroImageUrl?: string | null; // wide photo behind the bar's name at the top of the page
   locationNote?: string | null; // shown under the map, e.g. where to park
   photos: BarPhoto[]; // live music and venue shots, shown in order within each section
+  reviews?: Review[]; // customer quotes, shown in order
   orderUrl: string | null; // the bar's existing online ordering page, if any
   smsNumber: string | null; // Twilio number the owner texts updates to
   ownerPhones: string[]; // numbers allowed to text updates, E.164

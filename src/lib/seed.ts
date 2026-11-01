@@ -26,6 +26,23 @@ function pub78Bar(): Bar {
     logoUrl: "/logos/pub-78.png",
     heroImageUrl: "/photos/pub-78/live-1.jpg",
     locationNote: "Additional parking on Brookfield Ave.",
+    reviews: [
+      {
+        quote: "Went to this bar for the first time and absolutely had a blast. They had an amazing band in and the place was rocking!",
+        author: "Kerry O.",
+        source: "Google",
+      },
+      {
+        quote: "It's a nice little bar. The bartender Rodney was exceptional he made suggestions on what food he really liked there. Met the owner who was very nice and friendly. Definitely would recommend…",
+        author: "Joseph M.",
+        source: "Google",
+      },
+      {
+        quote: "Top notch establishment!! Owners are amazing! And we've seen some great bands at the Pub!",
+        author: "Trish C.",
+        source: null,
+      },
+    ],
     photos: [
       { src: "/photos/pub-78/live-1.jpg", alt: "Beggar's Buzz playing on the Pub 78 stage under purple lights" },
       { src: "/photos/pub-78/live-2.jpg", alt: "A band playing to a full room, seen from behind the stage" },

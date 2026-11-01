@@ -126,6 +126,12 @@ ul, ol { list-style: none; margin: 0; padding: 0; }
   .site-footer { padding-bottom: calc(6rem + env(safe-area-inset-bottom, 0px)); }
 }
 
+.reviews { display: grid; grid-template-columns: repeat(auto-fill, minmax(min(100%, 20rem), 1fr)); gap: 1rem; }
+.review { margin: 0; height: 100%; display: grid; gap: 1rem; align-content: space-between; border: 1px solid var(--line); border-left: 4px solid var(--accent); border-radius: 16px; padding: 1.25rem 1.5rem; background: var(--surface); }
+.review blockquote { margin: 0; font-size: 1.2rem; line-height: 1.5; }
+.review blockquote::before { content: "\201C"; display: block; font-family: var(--font-display); font-size: 3rem; line-height: 0.6; color: var(--accent); margin-bottom: 0.25rem; }
+.review figcaption { color: var(--muted); font-size: 0.9rem; font-weight: 600; }
+
 .find-us { display: grid; gap: 1.25rem; }
 .map { display: block; width: 100%; aspect-ratio: 4 / 3; border: 1px solid var(--line); border-radius: 16px; background: var(--surface); }
 .find-us-address { font-size: 1.15rem; font-weight: 600; }
