@@ -27,7 +27,7 @@ function pub78Bar(): Bar {
     heroImageUrl: "/photos/pub-78/live-1.jpg",
     locationNote: "Additional parking on Brookfield Ave.",
     motif: "rail",
-    social: { facebook: "https://www.facebook.com/pub78/", instagram: null },
+    social: { facebook: "https://www.facebook.com/pub78/", instagram: "https://www.instagram.com/pub78_brookfield/" },
     reviews: [
       {
         quote: "Went to this bar for the first time and absolutely had a blast. They had an amazing band in and the place was rocking!",
