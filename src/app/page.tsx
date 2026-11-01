@@ -77,6 +77,16 @@ export default async function BarHome() {
     categories.set(item.category, [...(categories.get(item.category) ?? []), item]);
   }
 
+  // Links for the header, in page order, only for sections that will show.
+  const sections = [
+    ["events", "Events", true],
+    ["live-music", "Live music", musicPhotos.length > 0],
+    ["specials", "Specials", weekly.length > 0],
+    ["menu", "Menu", categories.size > 0],
+    ["the-bar", "The bar", venuePhotos.length > 0],
+    ["hours", "Hours", true],
+  ].filter(([, , shown]) => shown) as [string, string, boolean][];
+
   const statusText = status.open
     ? `Open now · until ${formatTime(status.closesAt)}`
     : status.opensAt
@@ -97,6 +107,15 @@ export default async function BarHome() {
           <a href="#top" className="wordmark">{bar.name}</a>
           <span className={`status ${status.open ? "is-open" : ""}`}>{statusText}</span>
         </div>
+        <nav className="wrap section-nav" aria-label="Sections">
+          <ul>
+            {sections.map(([id, label]) => (
+              <li key={id}>
+                <a href={`#${id}`}>{label}</a>
+              </li>
+            ))}
+          </ul>
+        </nav>
       </header>
 
       <main id="top">
