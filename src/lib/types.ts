@@ -50,6 +50,8 @@ export interface Bar {
   // When food is served, if it differs from bar hours. null = kitchen follows bar hours.
   kitchenHours: Partial<Record<Weekday, DayHours>> | null;
   google: GoogleLink | null;
+  social?: { facebook?: string | null; instagram?: string | null }; // full profile URLs
+  motif?: "rail" | null; // optional decorative theme; "rail" adds train-track dividers
 }
 
 export interface BarEvent {

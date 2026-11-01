@@ -18,7 +18,8 @@ import {
   upcomingEvents,
 } from "@/lib/schedule";
 import { barJsonLd } from "@/lib/structured-data";
-import type { BarPhoto, MenuItem, Weekday } from "@/lib/types";
+import type { MenuItem, Weekday } from "@/lib/types";
+import { PhotoGallery } from "./photo-gallery";
 
 // Specials, hours, and "open now" depend on the current time, so never cache this page.
 export const dynamic = "force-dynamic";
@@ -32,19 +33,6 @@ export async function generateMetadata(): Promise<Metadata> {
 function timeRange(start: string | null, end: string | null) {
   if (!start) return "All day";
   return end ? `${formatTime(start)}–${formatTime(end)}` : formatTime(start);
-}
-
-function PhotoList({ photos }: { photos: BarPhoto[] }) {
-  return (
-    <ul className="photos">
-      {photos.map((photo) => (
-        <li key={photo.src}>
-          {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img src={photo.src} alt={photo.alt} loading="lazy" />
-        </li>
-      ))}
-    </ul>
-  );
 }
 
 export default async function BarHome() {
@@ -99,7 +87,7 @@ export default async function BarHome() {
   const tel = `tel:${bar.phone.replace(/[^\d+]/g, "")}`;
 
   return (
-    <div className="site" style={{ "--accent": bar.accentColor } as React.CSSProperties}>
+    <div className="site" data-motif={bar.motif ?? undefined} style={{ "--accent": bar.accentColor } as React.CSSProperties}>
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(barJsonLd(bar, upcoming)) }}
@@ -239,7 +227,7 @@ export default async function BarHome() {
         {musicPhotos.length > 0 && (
           <section className="wrap" id="live-music" aria-labelledby="photos-heading">
             <h2 id="photos-heading">Live music</h2>
-            <PhotoList photos={musicPhotos} />
+            <PhotoGallery photos={musicPhotos} />
           </section>
         )}
 
@@ -303,7 +291,7 @@ export default async function BarHome() {
         {venuePhotos.length > 0 && (
           <section className="wrap" id="the-bar" aria-labelledby="venue-heading">
             <h2 id="venue-heading">The bar</h2>
-            <PhotoList photos={venuePhotos} />
+            <PhotoGallery photos={venuePhotos} />
           </section>
         )}
 
@@ -368,10 +356,34 @@ export default async function BarHome() {
       </nav>
 
       <footer className="site-footer">
-        <div className="wrap">
-          <p className="wordmark">{bar.name}</p>
-          <p>{bar.address}</p>
-          <p><a href={tel}>{bar.phone}</a></p>
+        <div className="wrap footer-row">
+          {bar.logoUrl && (
+            // eslint-disable-next-line @next/next/no-img-element
+            <img className="footer-logo" src={bar.logoUrl} alt="" width={80} height={78} />
+          )}
+          <div className="footer-text">
+            <p className="wordmark">{bar.name}</p>
+            <p>{bar.address}</p>
+            <p><a href={tel}>{bar.phone}</a></p>
+          </div>
+          {(bar.social?.facebook || bar.social?.instagram) && (
+            <ul className="social" aria-label="Follow us">
+              {bar.social.facebook && (
+                <li>
+                  <a href={bar.social.facebook} aria-label="Facebook" rel="noopener">
+                    <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M13.5 21v-7.5h2.5l.4-3h-2.9V8.6c0-.9.3-1.5 1.5-1.5h1.5V4.4c-.3 0-1.2-.1-2.2-.1-2.2 0-3.7 1.3-3.7 3.8v2.4H8v3h2.6V21h2.9Z" /></svg>
+                  </a>
+                </li>
+              )}
+              {bar.social.instagram && (
+                <li>
+                  <a href={bar.social.instagram} aria-label="Instagram" rel="noopener">
+                    <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 7.3A4.7 4.7 0 1 0 12 16.7 4.7 4.7 0 0 0 12 7.3Zm0 7.7a3 3 0 1 1 0-6 3 3 0 0 1 0 6Zm6-7.9a1.1 1.1 0 1 1-2.2 0 1.1 1.1 0 0 1 2.2 0ZM12 4.6c2.4 0 2.7 0 3.6.1 2.4.1 3.6 1.3 3.7 3.7.1.9.1 1.2.1 3.6s0 2.7-.1 3.6c-.1 2.4-1.3 3.6-3.7 3.7-.9.1-1.2.1-3.6.1s-2.7 0-3.6-.1c-2.4-.1-3.6-1.3-3.7-3.7-.1-.9-.1-1.2-.1-3.6s0-2.7.1-3.6C4.8 6 6 4.8 8.4 4.7c.9-.1 1.2-.1 3.6-.1ZM12 3c-2.4 0-2.8 0-3.7.1C5 3.2 3.2 5 3.1 8.3 3 9.2 3 9.6 3 12s0 2.8.1 3.7c.1 3.3 1.9 5.1 5.2 5.2.9.1 1.3.1 3.7.1s2.8 0 3.7-.1c3.3-.1 5.1-1.9 5.2-5.2.1-.9.1-1.3.1-3.7s0-2.8-.1-3.7C20.8 5 19 3.2 15.7 3.1 14.8 3 14.4 3 12 3Z" /></svg>
+                  </a>
+                </li>
+              )}
+            </ul>
+          )}
         </div>
       </footer>
     </div>
