@@ -56,6 +56,7 @@ export default async function BarHome() {
   const musicPhotos = (bar.photos ?? []).filter((p) => (p.kind ?? "music") === "music");
   const reviews = bar.reviews ?? [];
   const venuePhotos = (bar.photos ?? []).filter((p) => p.kind === "venue");
+  const foodPhotos = (bar.photos ?? []).filter((p) => p.kind === "food");
   const weekly = specials.filter((s) => s.active && !s.date);
   const notices = overrides
     .filter((o) => o.date >= now.date && o.date <= addDays(now.date, 14))
@@ -266,6 +267,7 @@ export default async function BarHome() {
         {categories.size > 0 && (
           <section className="wrap" id="menu" aria-labelledby="menu-heading">
             <h2 id="menu-heading">Menu</h2>
+            {foodPhotos.length > 0 && <PhotoGallery photos={foodPhotos} />}
             <div className="menu">
               {[...categories].map(([category, items]) => (
                 <div key={category} className="menu-group">
