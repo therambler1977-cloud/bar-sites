@@ -32,6 +32,11 @@ function pub78Bar(): Bar {
         author: "Kerry O.",
         source: "Google",
       },
+      {
+        quote: "It's a nice little bar. The bartender Rodney was exceptional he made suggestions on what food he really liked there. Met the owner who was very nice and friendly. Definitely would recommend…",
+        author: "Joseph M.",
+        source: "Google",
+      },
     ],
     photos: [
       { src: "/photos/pub-78/live-1.jpg", alt: "Beggar's Buzz playing on the Pub 78 stage under purple lights" },
