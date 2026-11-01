@@ -32,6 +32,8 @@ export interface Bar {
   domains: string[]; // custom domains that serve this bar's site
   accentColor: string;
   logoUrl: string | null; // shown on a light card, so a logo with a white background works
+  heroImageUrl?: string | null; // wide photo behind the bar's name at the top of the page
+  locationNote?: string | null; // shown under the map, e.g. where to park
   photos: BarPhoto[]; // live music and venue shots, shown in order within each section
   orderUrl: string | null; // the bar's existing online ordering page, if any
   smsNumber: string | null; // Twilio number the owner texts updates to
