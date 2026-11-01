@@ -251,7 +251,7 @@ export default async function BarHome() {
                 <li key={r.author + r.quote.slice(0, 20)}>
                   <figure className="review">
                     <blockquote>{r.quote}</blockquote>
-                    <figcaption>{r.author} · {r.source} review</figcaption>
+                    <figcaption>{r.author}{r.source ? ` · ${r.source} review` : ""}</figcaption>
                   </figure>
                 </li>
               ))}

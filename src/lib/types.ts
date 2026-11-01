@@ -24,7 +24,7 @@ export interface BarPhoto {
 export interface Review {
   quote: string;
   author: string; // first name and last initial, e.g. "Kerry O."
-  source: string; // e.g. "Google"
+  source: string | null; // e.g. "Google"; null when unknown
 }
 
 export interface Bar {

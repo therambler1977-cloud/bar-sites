@@ -37,6 +37,11 @@ function pub78Bar(): Bar {
         author: "Joseph M.",
         source: "Google",
       },
+      {
+        quote: "Top notch establishment!! Owners are amazing! And we've seen some great bands at the Pub!",
+        author: "Trish C.",
+        source: null,
+      },
     ],
     photos: [
       { src: "/photos/pub-78/live-1.jpg", alt: "Beggar's Buzz playing on the Pub 78 stage under purple lights" },
