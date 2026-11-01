@@ -18,7 +18,7 @@ export interface BarPhoto {
   src: string;
   alt: string;
   // "music" goes in the Live music section, "venue" (inside and outside) in The bar.
-  kind?: "music" | "venue"; // missing = music, for photos saved before venue photos existed
+  kind?: "music" | "venue" | "food"; // missing = music, for photos saved before venue photos existed
 }
 
 export interface Review {
