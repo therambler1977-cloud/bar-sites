@@ -63,6 +63,7 @@ function pub78Bar(): Bar {
       { src: "/photos/pub-78/food-guinness.webp", alt: "A pint of Guinness on the bar", kind: "food" },
     ],
     orderUrl: null,
+    onlineOrdering: "demo",
     smsNumber: null,
     ownerPhones: [],
     adminPasswordHash: hashPassword("demo1234"),
@@ -272,5 +273,6 @@ export function seedData(now = new Date()): Database {
       },
     ],
     pendingUpdates: [],
+    orders: [],
   };
 }

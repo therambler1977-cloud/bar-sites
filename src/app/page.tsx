@@ -20,6 +20,8 @@ import {
 import { barJsonLd } from "@/lib/structured-data";
 import type { MenuItem, Weekday } from "@/lib/types";
 import { PhotoGallery } from "./photo-gallery";
+import { MenuOrdering } from "./menu-ordering";
+import { pickupDays } from "@/lib/ordering";
 
 // Specials, hours, and "open now" depend on the current time, so never cache this page.
 export const dynamic = "force-dynamic";
@@ -61,6 +63,9 @@ export default async function BarHome() {
   const notices = overrides
     .filter((o) => o.date >= now.date && o.date <= addDays(now.date, 14))
     .sort((a, b) => a.date.localeCompare(b.date));
+
+  // Ordering on the site takes guests to the menu; otherwise use the bar's own ordering page.
+  const orderHref = bar.onlineOrdering ? "#menu" : bar.orderUrl;
 
   const categories = new Map<string, MenuItem[]>();
   for (const item of [...menu].sort((a, b) => a.sortOrder - b.sortOrder)) {
@@ -126,8 +131,8 @@ export default async function BarHome() {
             <h1>{bar.name}</h1>
             <p className="tagline">{bar.tagline}</p>
             <div className="actions hero-actions">
-              {bar.orderUrl && (
-                <a className="button primary" href={bar.orderUrl}>Order online</a>
+              {orderHref && (
+                <a className="button primary" href={orderHref}>Order online</a>
               )}
               <a className="button" href={tel}>Call {bar.phone}</a>
               <a className="button" href={mapsUrl}>Directions</a>
@@ -268,25 +273,19 @@ export default async function BarHome() {
           <section className="wrap" id="menu" aria-labelledby="menu-heading">
             <h2 id="menu-heading">Menu</h2>
             {foodPhotos.length > 0 && <PhotoGallery photos={foodPhotos} />}
-            <div className="menu">
-              {[...categories].map(([category, items]) => (
-                <div key={category} className="menu-group">
-                  <h3 className="eyebrow">{category}</h3>
-                  <ul>
-                    {items.map((item) => (
-                      <li key={item.id} className={`menu-item ${item.available ? "" : "sold-out"}`}>
-                        <div className="menu-line">
-                          <span className="menu-name">{item.name}</span>
-                          <span className="menu-dots" aria-hidden="true" />
-                          <span className="menu-price">{item.available ? item.price : "Sold out"}</span>
-                        </div>
-                        {item.description && <p className="muted">{item.description}</p>}
-                      </li>
-                    ))}
-                  </ul>
-                </div>
-              ))}
-            </div>
+            <MenuOrdering
+              categories={[...categories]}
+              ordering={
+                bar.onlineOrdering
+                  ? {
+                      storageKey: `order:${bar.id}`,
+                      days: pickupDays(bar, overrides, now),
+                      barName: bar.name,
+                      address: bar.address,
+                    }
+                  : null
+              }
+            />
           </section>
         )}
 
@@ -352,7 +351,7 @@ export default async function BarHome() {
       </main>
 
       <nav className="call-bar" aria-label="Quick actions">
-        {bar.orderUrl && <a href={bar.orderUrl}>Order</a>}
+        {orderHref && <a href={orderHref}>Order</a>}
         <a href={tel}>Call</a>
         <a href={mapsUrl}>Directions</a>
       </nav>

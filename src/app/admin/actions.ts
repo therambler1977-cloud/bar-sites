@@ -174,3 +174,12 @@ export async function deleteHoursOverride(form: FormData) {
   await removeHoursOverride(await getStore(), bar, text(form, "id"));
   done("/admin/hours");
 }
+
+export async function setOrderStatus(form: FormData) {
+  const bar = await requireAdminBar();
+  const status = text(form, "status");
+  if (status !== "new" && status !== "ready" && status !== "picked_up") return;
+  await (await getStore()).update("orders", bar.id, text(form, "id"), { status });
+  // Stay on the page and refresh it in place; the kitchen may tap several in a row.
+  revalidatePath("/admin/orders");
+}

@@ -8,6 +8,7 @@ import type {
   BarEvent,
   HoursOverride,
   MenuItem,
+  Order,
   PendingUpdate,
   Special,
 } from "./types";
@@ -19,6 +20,7 @@ export interface Collections {
   menuItems: MenuItem;
   hoursOverrides: HoursOverride;
   pendingUpdates: PendingUpdate;
+  orders: Order;
 }
 export type CollectionName = keyof Collections;
 type NewRecord<K extends CollectionName> = Omit<Collections[K], "id">;
@@ -50,6 +52,7 @@ export interface Database {
   menuItems: MenuItem[];
   hoursOverrides: HoursOverride[];
   pendingUpdates: PendingUpdate[];
+  orders?: Order[]; // missing in demo files saved before ordering existed
 }
 
 function matchesBar(bar: Bar, by: BarLookup): boolean {
@@ -64,7 +67,9 @@ export class MemoryStore implements Store {
   constructor(
     private db: Database,
     private file: string | null = null,
-  ) {}
+  ) {
+    db.orders ??= [];
+  }
 
   private async save() {
     if (!this.file) return;
@@ -125,6 +130,7 @@ const TABLES: Record<CollectionName, string> = {
   menuItems: "menu_items",
   hoursOverrides: "hours_overrides",
   pendingUpdates: "pending_updates",
+  orders: "orders",
 };
 
 const toSnake = (key: string) => key.replace(/[A-Z]/g, (c) => `_${c.toLowerCase()}`);

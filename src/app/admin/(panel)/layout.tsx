@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { requireAdminBar } from "@/lib/admin";
+import { getStore } from "@/lib/store";
 import { logout } from "../actions";
 
 export const dynamic = "force-dynamic";
@@ -14,6 +15,12 @@ const TABS = [
 
 export default async function PanelLayout({ children }: { children: React.ReactNode }) {
   const bar = await requireAdminBar();
+  const newOrders = bar.onlineOrdering
+    ? (await (await getStore()).list("orders", bar.id)).filter((o) => o.status === "new").length
+    : 0;
+  const tabs = bar.onlineOrdering
+    ? [TABS[0], { href: "/admin/orders", label: newOrders ? `Orders (${newOrders})` : "Orders" }, ...TABS.slice(1)]
+    : TABS;
   return (
     <div className="admin" style={{ "--accent": bar.accentColor } as React.CSSProperties}>
       <header className="admin-header">
@@ -27,7 +34,7 @@ export default async function PanelLayout({ children }: { children: React.ReactN
           </div>
         </div>
         <nav className="tabs" aria-label="Admin sections">
-          {TABS.map((t) => (
+          {tabs.map((t) => (
             <Link key={t.href} href={t.href}>{t.label}</Link>
           ))}
         </nav>

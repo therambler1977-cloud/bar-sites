@@ -43,6 +43,9 @@ export interface Bar {
   photos: BarPhoto[]; // live music and venue shots, shown in order within each section
   reviews?: Review[]; // customer quotes, shown in order
   orderUrl: string | null; // the bar's existing online ordering page, if any
+  // Ordering built into the site. "demo" keeps orders on the site only (pay at pickup);
+  // "clover" also sends each order to the bar's Clover POS. null/missing = off.
+  onlineOrdering?: "demo" | "clover" | null;
   smsNumber: string | null; // Twilio number the owner texts updates to
   ownerPhones: string[]; // numbers allowed to text updates, E.164
   adminPasswordHash: string; // scrypt, see auth.ts
@@ -141,4 +144,29 @@ export interface PendingUpdate {
   fromPhone: string;
   update: ParsedUpdate;
   createdAt: string; // ISO timestamp
+}
+
+export interface OrderLine {
+  menuItemId: string;
+  name: string;
+  unitPrice: number; // cents, copied from the menu when the order was placed
+  quantity: number;
+}
+
+export type OrderStatus = "new" | "ready" | "picked_up";
+
+export interface Order {
+  id: string;
+  barId: string;
+  number: number; // short number the guest gives at the bar, e.g. 104
+  customerName: string;
+  customerPhone: string;
+  pickupDate: string;
+  pickupTime: string;
+  notes: string;
+  lines: OrderLine[];
+  subtotal: number; // cents
+  status: OrderStatus;
+  createdAt: string; // ISO timestamp
+  posOrderId: string | null; // the order's id in the bar's POS, once sent
 }
