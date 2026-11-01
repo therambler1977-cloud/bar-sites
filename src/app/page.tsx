@@ -85,6 +85,7 @@ export default async function BarHome() {
     ["menu", "Menu", categories.size > 0],
     ["the-bar", "The bar", venuePhotos.length > 0],
     ["hours", "Hours", true],
+    ["find-us", "Find us", true],
   ].filter(([, , shown]) => shown) as [string, string, boolean][];
 
   const statusText = status.open
@@ -119,21 +120,27 @@ export default async function BarHome() {
       </header>
 
       <main id="top">
-        <section className={`hero wrap ${bar.logoUrl ? "has-logo" : ""}`}>
-          {bar.logoUrl && (
-            <div className="logo-card">
-              {/* eslint-disable-next-line @next/next/no-img-element */}
-              <img src={bar.logoUrl} alt={`${bar.name} logo`} width={400} height={390} />
-            </div>
+        <section className={`hero ${bar.heroImageUrl ? "has-photo" : ""}`}>
+          {bar.heroImageUrl && (
+            // eslint-disable-next-line @next/next/no-img-element
+            <img className="hero-photo" src={bar.heroImageUrl} alt="" fetchPriority="high" />
           )}
-          <h1>{bar.name}</h1>
-          <p className="tagline">{bar.tagline}</p>
-          <div className="actions">
-            {bar.orderUrl && (
-              <a className="button primary" href={bar.orderUrl}>Order online</a>
+          <div className={`wrap hero-content ${bar.logoUrl ? "has-logo" : ""}`}>
+            {bar.logoUrl && (
+              <div className="logo-card">
+                {/* eslint-disable-next-line @next/next/no-img-element */}
+                <img src={bar.logoUrl} alt={`${bar.name} logo`} width={400} height={390} />
+              </div>
             )}
-            <a className="button" href={tel}>Call {bar.phone}</a>
-            <a className="button" href={mapsUrl}>Directions</a>
+            <h1>{bar.name}</h1>
+            <p className="tagline">{bar.tagline}</p>
+            <div className="actions hero-actions">
+              {bar.orderUrl && (
+                <a className="button primary" href={bar.orderUrl}>Order online</a>
+              )}
+              <a className="button" href={tel}>Call {bar.phone}</a>
+              <a className="button" href={mapsUrl}>Directions</a>
+            </div>
           </div>
         </section>
 
@@ -313,7 +320,34 @@ export default async function BarHome() {
             </tbody>
           </table>
         </section>
+
+        <section className="wrap" id="find-us" aria-labelledby="find-heading">
+          <h2 id="find-heading">Find us</h2>
+          <div className="find-us">
+            <iframe
+              className="map"
+              title={`Map showing ${bar.name}`}
+              src={`https://www.google.com/maps?q=${encodeURIComponent(`${bar.name}, ${bar.address}`)}&output=embed`}
+              loading="lazy"
+              referrerPolicy="no-referrer-when-downgrade"
+            />
+            <div className="find-us-text">
+              <p className="find-us-address">{bar.address}</p>
+              {bar.locationNote && <p className="muted">{bar.locationNote}</p>}
+              <div className="actions">
+                <a className="button primary" href={mapsUrl}>Get directions</a>
+                <a className="button" href={tel}>Call {bar.phone}</a>
+              </div>
+            </div>
+          </div>
+        </section>
       </main>
+
+      <nav className="call-bar" aria-label="Quick actions">
+        {bar.orderUrl && <a href={bar.orderUrl}>Order</a>}
+        <a href={tel}>Call</a>
+        <a href={mapsUrl}>Directions</a>
+      </nav>
 
       <footer className="site-footer">
         <div className="wrap">
