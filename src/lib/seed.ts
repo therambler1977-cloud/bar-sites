@@ -42,7 +42,7 @@ function pub78Bar(): Bar {
       {
         quote: "Top notch establishment!! Owners are amazing! And we've seen some great bands at the Pub!",
         author: "Trish C.",
-        source: null,
+        source: "Yelp",
       },
     ],
     photos: [
