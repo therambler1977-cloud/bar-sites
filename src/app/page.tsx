@@ -18,8 +18,9 @@ import {
   upcomingEvents,
 } from "@/lib/schedule";
 import { barJsonLd } from "@/lib/structured-data";
-import type { MenuItem, Weekday } from "@/lib/types";
+import type { BarEvent, MenuItem, Weekday } from "@/lib/types";
 import { PhotoGallery } from "./photo-gallery";
+import { PhotoSection } from "./photo-section";
 import { MenuOrdering } from "./menu-ordering";
 import { pickupDays } from "@/lib/ordering";
 
@@ -35,6 +36,27 @@ export async function generateMetadata(): Promise<Metadata> {
 function timeRange(start: string | null, end: string | null) {
   if (!start) return "All day";
   return end ? `${formatTime(start)}–${formatTime(end)}` : formatTime(start);
+}
+
+function eventItem(e: BarEvent) {
+  const [, month, day] = e.date.split("-").map(Number);
+  const monthName = new Date(Date.UTC(2000, month - 1, 1)).toLocaleString("en-US", { month: "short", timeZone: "UTC" });
+  return (
+    <li key={e.id} className="event">
+      <div className="event-date" aria-hidden="true">
+        <span className="event-month">{monthName}</span>
+        <span className="event-day">{day}</span>
+      </div>
+      <div className="event-body">
+        <h3>{e.title}</h3>
+        <p className="event-meta">
+          {formatDate(e.date)} · {timeRange(e.startTime, e.endTime)}
+          {e.cover ? ` · ${e.cover}` : ""}
+        </p>
+        {e.description && <p className="muted">{e.description}</p>}
+      </div>
+    </li>
+  );
 }
 
 export default async function BarHome() {
@@ -73,16 +95,14 @@ export default async function BarHome() {
   }
 
   // Links for the header, in page order, only for sections that will show.
+  const photoCount = musicPhotos.length + venuePhotos.length;
   const sections = [
-    ["events", "Events", true],
-    ["live-music", "Live music", musicPhotos.length > 0],
-    ["reviews", "Reviews", reviews.length > 0],
-    ["specials", "Specials", weekly.length > 0],
     ["menu", "Menu", categories.size > 0],
-    ["the-bar", "The bar", venuePhotos.length > 0],
-    ["hours", "Hours", true],
-    ["find-us", "Find us", true],
-  ].filter(([, , shown]) => shown) as [string, string, boolean][];
+    ["events", "Events", true],
+    ["specials", "Specials", weekly.length > 0],
+    ["photos", "Photos", photoCount > 0],
+    ["visit", "Visit", true],
+].filter(([, , shown]) => shown) as [string, string, boolean][];
 
   const statusText = status.open
     ? `Open now · until ${formatTime(status.closesAt)}`
@@ -187,88 +207,6 @@ export default async function BarHome() {
           </div>
         </section>
 
-        <section className="wrap" id="events" aria-labelledby="events-heading">
-          <h2 id="events-heading">Coming up</h2>
-          {upcoming.length === 0 ? (
-            <p className="muted">Nothing on the calendar yet.</p>
-          ) : (
-            <ol className="events">
-              {upcoming.map((e) => {
-                const [, month, day] = e.date.split("-").map(Number);
-                const monthName = new Date(Date.UTC(2000, month - 1, 1)).toLocaleString("en-US", { month: "short", timeZone: "UTC" });
-                return (
-                  <li key={e.id} className="event">
-                    <div className="event-date" aria-hidden="true">
-                      <span className="event-month">{monthName}</span>
-                      <span className="event-day">{day}</span>
-                    </div>
-                    <div className="event-body">
-                      <h3>{e.title}</h3>
-                      <p className="event-meta">
-                        {formatDate(e.date)} · {timeRange(e.startTime, e.endTime)}
-                        {e.cover ? ` · ${e.cover}` : ""}
-                      </p>
-                      {e.description && <p className="muted">{e.description}</p>}
-                    </div>
-                  </li>
-                );
-              })}
-            </ol>
-          )}
-          {recent.length > 0 && (
-            <>
-              <h3 className="recent-heading">Recently</h3>
-              <ul className="recent-events">
-                {recent.map((e) => (
-                  <li key={e.id}>
-                    <span className="recent-date">{formatDate(e.date)}</span>
-                    <span>{e.title}</span>
-                  </li>
-                ))}
-              </ul>
-            </>
-          )}
-        </section>
-
-        {musicPhotos.length > 0 && (
-          <section className="wrap" id="live-music" aria-labelledby="photos-heading">
-            <h2 id="photos-heading">Live music</h2>
-            <PhotoGallery photos={musicPhotos} />
-          </section>
-        )}
-
-        {reviews.length > 0 && (
-          <section className="wrap" id="reviews" aria-labelledby="reviews-heading">
-            <h2 id="reviews-heading">What people say</h2>
-            <ul className="reviews">
-              {reviews.map((r) => (
-                <li key={r.author + r.quote.slice(0, 20)}>
-                  <figure className="review">
-                    <blockquote>{r.quote}</blockquote>
-                    <figcaption>{r.author}{r.source ? ` · ${r.source} review` : ""}</figcaption>
-                  </figure>
-                </li>
-              ))}
-            </ul>
-          </section>
-        )}
-
-        {weekly.length > 0 && (
-          <section className="wrap" id="specials" aria-labelledby="specials-heading">
-            <h2 id="specials-heading">Weekly specials</h2>
-            <ul className="specials">
-              {weekly.map((s) => (
-                <li key={s.id} className="special">
-                  <p className="eyebrow">{describeDays(s.days)} · {timeRange(s.startTime, s.endTime)}</p>
-                  <h3>{s.title}</h3>
-                  {s.price && <p className="special-price">{s.price}</p>}
-                  {s.description && <p className="muted">{s.description}</p>}
-                </li>
-              ))}
-            </ul>
-          </section>
-        )}
-
         {categories.size > 0 && (
           <section className="wrap" id="menu" aria-labelledby="menu-heading">
             <h2 id="menu-heading">Menu</h2>
@@ -289,47 +227,80 @@ export default async function BarHome() {
           </section>
         )}
 
-        {venuePhotos.length > 0 && (
-          <section className="wrap" id="the-bar" aria-labelledby="venue-heading">
-            <h2 id="venue-heading">The bar</h2>
-            <PhotoGallery photos={venuePhotos} />
+        <section className="wrap" id="events" aria-labelledby="events-heading">
+          <h2 id="events-heading">Coming up</h2>
+          {upcoming.length === 0 ? (
+            <p className="muted">Nothing on the calendar yet.</p>
+          ) : (
+            <ol className="events">{upcoming.slice(0, 5).map(eventItem)}</ol>
+          )}
+          {upcoming.length > 5 && (
+            <details className="more">
+              <summary>See all {upcoming.length} upcoming</summary>
+              <ol className="events">{upcoming.slice(5).map(eventItem)}</ol>
+            </details>
+          )}
+          {recent.length > 0 && (
+            <details className="more">
+              <summary>Past shows</summary>
+              <ul className="recent-events">
+                {recent.map((e) => (
+                  <li key={e.id}>
+                    <span className="recent-date">{formatDate(e.date)}</span>
+                    <span>{e.title}</span>
+                  </li>
+                ))}
+              </ul>
+            </details>
+          )}
+        </section>
+
+        {weekly.length > 0 && (
+          <section className="wrap" id="specials" aria-labelledby="specials-heading">
+            <h2 id="specials-heading">Weekly specials</h2>
+            <ul className="specials">
+              {weekly.map((s) => (
+                <li key={s.id} className="special">
+                  <p className="eyebrow">{describeDays(s.days)} · {timeRange(s.startTime, s.endTime)}</p>
+                  <h3>{s.title}</h3>
+                  {s.price && <p className="special-price">{s.price}</p>}
+                  {s.description && <p className="muted">{s.description}</p>}
+                </li>
+              ))}
+            </ul>
           </section>
         )}
 
-        <section className="wrap" id="hours" aria-labelledby="hours-heading">
-          <h2 id="hours-heading">Hours</h2>
-          <table className="hours">
-            {bar.kitchenHours && (
-              <thead>
-                <tr>
-                  <td />
-                  <th scope="col">Bar</th>
-                  <th scope="col">Kitchen</th>
-                </tr>
-              </thead>
-            )}
-            <tbody>
-              {Array.from({ length: 7 }, (_, i) => {
-                const date = addDays(now.date, i);
-                const day = ((now.weekday + i) % 7) as Weekday;
-                const hours = hoursOn(bar, overrides, date);
-                const food = kitchenHoursOn(bar, overrides, date);
-                return (
-                  <tr key={date} className={i === 0 ? "is-today" : ""}>
-                    <th scope="row">{i === 0 ? "Today" : WEEKDAY_NAMES[day]}</th>
-                    <td>{hours ? `${formatTime(hours.open)}–${formatTime(hours.close)}` : "Closed"}</td>
-                    {bar.kitchenHours && (
-                      <td>{food ? `${formatTime(food.open)}–${formatTime(food.close)}` : "—"}</td>
-                    )}
-                  </tr>
-                );
-              })}
-            </tbody>
-          </table>
-        </section>
+        {photoCount > 0 && (
+          <section className="wrap" id="photos" aria-labelledby="photos-heading">
+            <h2 id="photos-heading">Photos</h2>
+            <PhotoSection
+              groups={[
+                { label: "Live music", photos: musicPhotos },
+                { label: "The bar", photos: venuePhotos },
+              ]}
+            />
+          </section>
+        )}
 
-        <section className="wrap" id="find-us" aria-labelledby="find-heading">
-          <h2 id="find-heading">Find us</h2>
+        {reviews.length > 0 && (
+          <section className="wrap reviews-strip" id="reviews" aria-labelledby="reviews-heading">
+            <h2 id="reviews-heading">What people say</h2>
+            <ul className="reviews">
+              {reviews.map((r) => (
+                <li key={r.author + r.quote.slice(0, 20)}>
+                  <figure className="review">
+                    <blockquote>{r.quote}</blockquote>
+                    <figcaption>{r.author}{r.source ? ` · ${r.source} review` : ""}</figcaption>
+                  </figure>
+                </li>
+              ))}
+            </ul>
+          </section>
+        )}
+
+        <section className="wrap" id="visit" aria-labelledby="visit-heading">
+          <h2 id="visit-heading">Visit</h2>
           <div className="find-us">
             <iframe
               className="map"
@@ -345,6 +316,35 @@ export default async function BarHome() {
                 <a className="button primary" href={mapsUrl}>Get directions</a>
                 <a className="button" href={tel}>Call {bar.phone}</a>
               </div>
+              <h3 className="visit-subhead" id="hours">Hours</h3>
+              <table className="hours">
+                {bar.kitchenHours && (
+                  <thead>
+                    <tr>
+                      <td />
+                      <th scope="col">Bar</th>
+                      <th scope="col">Kitchen</th>
+                    </tr>
+                  </thead>
+                )}
+                <tbody>
+                  {Array.from({ length: 7 }, (_, i) => {
+                    const date = addDays(now.date, i);
+                    const day = ((now.weekday + i) % 7) as Weekday;
+                    const hours = hoursOn(bar, overrides, date);
+                    const food = kitchenHoursOn(bar, overrides, date);
+                    return (
+                      <tr key={date} className={i === 0 ? "is-today" : ""}>
+                        <th scope="row">{i === 0 ? "Today" : WEEKDAY_NAMES[day]}</th>
+                        <td>{hours ? `${formatTime(hours.open)}–${formatTime(hours.close)}` : "Closed"}</td>
+                        {bar.kitchenHours && (
+                          <td>{food ? `${formatTime(food.open)}–${formatTime(food.close)}` : "—"}</td>
+                        )}
+                      </tr>
+                    );
+                  })}
+                </tbody>
+              </table>
             </div>
           </div>
         </section>
