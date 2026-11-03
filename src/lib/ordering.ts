@@ -135,3 +135,76 @@ export function checkOrder(
 export function nextOrderNumber(existing: Pick<Order, "number">[]): number {
   return existing.reduce((max, o) => Math.max(max, o.number), 100) + 1;
 }
+
+// ---------- Voice ordering: turning spoken words into menu items and pickup times ----------
+
+const normalize = (text: string) =>
+  text.toLowerCase().replace(/&/g, " and ").replace(/[^a-z0-9]+/g, " ").replace(/\b(the|a|an|order|of)\b/g, " ").replace(/\s+/g, " ").trim();
+
+/**
+ * Finds the menu item a caller means, e.g. "beef chimi" → "Italian Beef Chimi".
+ * Returns the item, or the closest candidates when it's ambiguous or unknown.
+ */
+export function matchMenuItem(
+  menu: MenuItem[],
+  spoken: string,
+): { item: MenuItem } | { candidates: MenuItem[] } {
+  const want = normalize(spoken);
+  const items = menu.filter((m) => parsePrice(m.price) !== null);
+  const exact = items.filter((m) => normalize(m.name) === want);
+  if (exact.length === 1) return { item: exact[0] };
+
+  const words = want.split(" ").filter((w) => w.length > 1);
+  const scored = items
+    .map((m) => {
+      const name = normalize(m.name);
+      const nameWords = name.split(" ");
+      const hits = words.filter((w) => nameWords.some((n) => n === w || (w.length > 3 && n.startsWith(w)))).length;
+      const contains = name.includes(want) || want.includes(name) ? 1 : 0;
+      return { m, score: hits / Math.max(words.length, 1) + contains };
+    })
+    .filter((s) => s.score > 0)
+    .sort((a, b) => b.score - a.score);
+  if (scored.length === 0) return { candidates: [] };
+  const best = scored[0];
+  const tied = scored.filter((s) => s.score === best.score);
+  if (best.score >= 1 && tied.length === 1) return { item: best.m };
+  return { candidates: scored.slice(0, 3).map((s) => s.m) };
+}
+
+const WEEKDAYS = ["sunday", "monday", "tuesday", "wednesday", "thursday", "friday", "saturday"];
+
+/** Picks the first pickup slot at or after the requested time on the requested day ("asap" = soonest). */
+export function resolvePickup(
+  days: PickupDay[],
+  day: string | undefined,
+  time: string | undefined,
+): { date: string; time: string } | { error: string } {
+  if (days.length === 0) return { error: "Online ordering is closed right now." };
+  const d = (day ?? "today").toLowerCase().trim();
+  const target =
+    d === "today" || d === "" ? days.find((x) => x.label === "Today")
+    : d === "tomorrow" ? days.find((x) => x.label === "Tomorrow")
+    : /^\d{4}-\d{2}-\d{2}$/.test(d) ? days.find((x) => x.date === d)
+    : days.find((x) => x.label.toLowerCase() === d || WEEKDAYS[new Date(`${x.date}T12:00:00Z`).getUTCDay()] === d);
+  if (!target) {
+    const options = days.map((x) => `${x.label} ${formatTime(x.times[0])}–${formatTime(x.times[x.times.length - 1])}`).join(", or ");
+    return { error: `The kitchen isn't taking orders for that day. Pickup is available ${options}.` };
+  }
+  const t = (time ?? "asap").toLowerCase().trim();
+  if (t === "asap" || t === "" || t === "soonest") return { date: target.date, time: target.times[0] };
+  const m = t.match(/^(\d{1,2}):?(\d{2})?\s*(am|pm)?$/);
+  if (!m) return { error: "Say the pickup time like 5:30 pm." };
+  let hour = Number(m[1]);
+  const minute = Number(m[2] ?? 0);
+  if (m[3] === "pm" && hour < 12) hour += 12;
+  if (m[3] === "am" && hour === 12) hour = 0;
+  // A bare "5" or "6:30" at a bar means evening.
+  if (!m[3] && hour >= 1 && hour <= 11 && toMinutes(target.times[0]) >= 12 * 60) hour += 12;
+  const wanted = hour * 60 + minute;
+  const slot = target.times.find((s) => toMinutes(s) >= wanted);
+  if (!slot) {
+    return { error: `The last pickup ${target.label.toLowerCase()} is ${formatTime(target.times[target.times.length - 1])}.` };
+  }
+  return { date: target.date, time: slot };
+}

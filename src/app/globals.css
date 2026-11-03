@@ -453,3 +453,18 @@ ul, ol { list-style: none; margin: 0; padding: 0; }
 /* Visit: hours sit under the address, beside the map. */
 .visit-subhead { font-size: 1.4rem; text-transform: uppercase; margin-top: 1.5rem; }
 .find-us-text .hours { margin-top: 0.25rem; }
+
+/* "Talk to us" voice assistant. */
+.voice-card {
+  display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 1rem;
+  margin-top: 1rem; padding: 1rem 1.25rem; border: 1px solid var(--line); border-radius: 16px; background: var(--surface);
+}
+.voice-card > div { flex: 1 1 16rem; display: grid; gap: 0.2rem; }
+.voice-title { font-weight: 600; }
+.voice-button { gap: 0.6rem; }
+.voice-live { background: var(--danger); border-color: var(--danger); color: #fff; }
+.voice-dot { width: 10px; height: 10px; border-radius: 999px; background: currentColor; opacity: 0.7; }
+.voice-dot.is-speaking { animation: voice-pulse 0.9s ease-in-out infinite; opacity: 1; }
+@keyframes voice-pulse { 50% { transform: scale(1.6); } }
+@media (prefers-reduced-motion: reduce) { .voice-dot.is-speaking { animation: none; } }
+.order-source { font-size: 0.75rem; font-weight: 600; letter-spacing: 0.06em; text-transform: uppercase; padding: 0.1rem 0.5rem; border-radius: 999px; background: color-mix(in srgb, var(--accent) 25%, transparent); }

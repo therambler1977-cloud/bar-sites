@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
+import { headers } from "next/headers";
 import { getCurrentBar } from "@/lib/tenant";
 import { getStore } from "@/lib/store";
 import {
@@ -21,6 +22,8 @@ import { barJsonLd } from "@/lib/structured-data";
 import type { BarEvent, MenuItem, Weekday } from "@/lib/types";
 import { PhotoGallery } from "./photo-gallery";
 import { PhotoSection } from "./photo-section";
+import { VoiceButton } from "./voice-button";
+import { voiceAssistant } from "@/lib/voice";
 import { MenuOrdering } from "./menu-ordering";
 import { pickupDays } from "@/lib/ordering";
 
@@ -71,6 +74,16 @@ export default async function BarHome() {
   ]);
 
   const now = localNow(new Date(), bar.timezone);
+  const pickup = pickupDays(bar, overrides, now);
+
+  // The "Talk to us" voice assistant shows once the bar's Vapi public key is set.
+  const vapiKey = process.env.VAPI_PUBLIC_KEY;
+  const requestHeaders = await headers();
+  const host = requestHeaders.get("x-forwarded-host") ?? requestHeaders.get("host") ?? "";
+  const proto = requestHeaders.get("x-forwarded-proto") ?? (host.startsWith("localhost") ? "http" : "https");
+  const assistant = vapiKey
+    ? voiceAssistant(bar, { events, specials, menu, overrides }, now, pickup, `${proto}://${host}`)
+    : null;
   const status = openStatus(bar, overrides, now);
   const kitchen = bar.kitchenHours ? kitchenStatus(bar, overrides, now) : null;
   const todaysSpecials = specialsOn(specials, now.date);
@@ -205,6 +218,7 @@ export default async function BarHome() {
               </ul>
             )}
           </div>
+          {vapiKey && assistant && <VoiceButton publicKey={vapiKey} assistant={assistant} />}
         </section>
 
         {categories.size > 0 && (
@@ -217,7 +231,7 @@ export default async function BarHome() {
                 bar.onlineOrdering
                   ? {
                       storageKey: `order:${bar.id}`,
-                      days: pickupDays(bar, overrides, now),
+                      days: pickup,
                       barName: bar.name,
                       address: bar.address,
                     }

@@ -87,6 +87,7 @@ function OrderCard({
       <div className="order-head">
         <strong className="order-number">#{order.number}</strong>
         <span>{order.customerName}</span>
+        {order.source === "voice" && <span className="order-source">By voice</span>}
         <span className="order-pickup">Pickup {day} {formatTime(order.pickupTime)}</span>
       </div>
       <ul className="order-lines">
