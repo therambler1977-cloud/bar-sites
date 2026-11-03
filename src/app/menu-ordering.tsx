@@ -10,6 +10,8 @@ import { placeOrder, type PlaceOrderResult } from "./order-actions";
 
 type Cart = Record<string, number>;
 
+const slug = (text: string) => text.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "");
+
 function formatTime(time: string) {
   const [h, m] = time.split(":").map(Number);
   const suffix = h >= 12 ? "pm" : "am";
@@ -118,9 +120,16 @@ export function MenuOrdering({
             : "Online ordering is closed right now. Call the bar to order."}
         </p>
       )}
+      {categories.length > 2 && (
+        <nav className="chips menu-chips" aria-label="Menu sections">
+          {categories.map(([category]) => (
+            <a key={category} className="chip-button" href={`#menu-${slug(category)}`}>{category}</a>
+          ))}
+        </nav>
+      )}
       <div className="menu">
         {categories.map(([category, list]) => (
-          <div key={category} className="menu-group">
+          <div key={category} className="menu-group" id={`menu-${slug(category)}`}>
             <h3 className="eyebrow">{category}</h3>
             <ul>
               {list.map((item) => {
