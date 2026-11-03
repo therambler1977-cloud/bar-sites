@@ -169,4 +169,5 @@ export interface Order {
   status: OrderStatus;
   createdAt: string; // ISO timestamp
   posOrderId: string | null; // the order's id in the bar's POS, once sent
+  source?: "web" | "voice"; // missing = web, for orders saved before voice ordering
 }
