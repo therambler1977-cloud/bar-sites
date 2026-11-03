@@ -24,10 +24,12 @@ export function VoiceButton({
   const vapi = useRef<VapiClient | null>(null);
   const [status, setStatus] = useState<Status>("idle");
   const [speaking, setSpeaking] = useState(false);
+  const [problem, setProblem] = useState<string | null>(null);
 
   useEffect(() => () => vapi.current?.stop(), []);
 
   async function start() {
+    setProblem(null);
     setStatus("connecting");
     try {
       if (!vapi.current) {
@@ -42,13 +44,17 @@ export function VoiceButton({
         client.on("speech-end", () => setSpeaking(false));
         client.on("error", (e) => {
           console.error("Voice call error", e);
+          setProblem(describeError(e));
           setStatus("error");
         });
         vapi.current = client;
       }
-      await vapi.current.start(assistant);
+      const call = await vapi.current.start(assistant);
+      // start() reports failures through the "error" event and returns null.
+      if (!call) setStatus("error");
     } catch (error) {
       console.error("Couldn't start the voice call", error);
+      setProblem(describeError(error));
       setStatus("error");
     }
   }
@@ -84,11 +90,32 @@ export function VoiceButton({
           {status === "live"
             ? speaking ? "Our assistant is talking…" : "Listening. Go ahead and ask."
             : status === "error"
-              ? "That didn't connect. Allow microphone access and try again."
+              ? `That didn't connect. ${problem ?? "Allow microphone access and try again."}`
               : "Talk with our voice assistant about hours, the menu, live music, or a pickup order."}
         </p>
       </div>
       {button}
     </div>
   );
+}
+
+/** A short, readable reason from whatever Vapi reported, e.g. a rejected key or a blocked microphone. */
+function describeError(e: unknown): string {
+  const find = (value: unknown, depth = 0): string | null => {
+    if (depth > 4 || value == null) return null;
+    if (typeof value === "string") return value;
+    if (Array.isArray(value)) return value.map((v) => find(v, depth + 1)).filter(Boolean).join("; ") || null;
+    if (typeof value === "object") {
+      const o = value as Record<string, unknown>;
+      if (typeof o.name === "string" && /NotAllowed|Permission/i.test(o.name)) return "The microphone is blocked. Allow it in the browser and try again.";
+      for (const key of ["message", "error", "errorMsg", "errorDetail", "details"]) {
+        const found = find(o[key], depth + 1);
+        if (found && found !== "[object Object]") return found;
+      }
+      if (typeof o.status === "number") return `Vapi answered with status ${o.status}.`;
+    }
+    return null;
+  };
+  const text = find(e) ?? "Unknown problem.";
+  return `(${text.slice(0, 200)})`;
 }
