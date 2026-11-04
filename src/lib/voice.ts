@@ -103,11 +103,8 @@ export function voiceBriefing(bar: Bar, data: BarData, now: LocalNow, days: Pick
 }
 
 /** What the assistant says when the call connects. */
-export function greeting(barName: string, canOrder: boolean) {
-  const help = canOrder
-    ? "tonight's specials, our hours, upcoming events, or getting a food order started"
-    : "tonight's specials, our hours, or upcoming events";
-  return `Hey, thanks for calling ${barName}! I can help with ${help}. What can I do for you?`;
+export function greeting(barName: string) {
+  return `${barName}! How can I help you?`;
 }
 
 /** Vapi assistant settings for a browser call. */
@@ -115,7 +112,7 @@ export function voiceAssistant(bar: Bar, data: BarData, now: LocalNow, days: Pic
   const canOrder = Boolean(bar.onlineOrdering) && days.length > 0;
   return {
     name: `${bar.name} assistant`.slice(0, 40),
-    firstMessage: greeting(bar.name, canOrder),
+    firstMessage: greeting(bar.name),
     maxDurationSeconds: 600,
     model: {
       provider: "anthropic" as const,
