@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 import { matchMenuItem, pickupDays, resolvePickup } from "@/lib/ordering";
-import { voiceAssistant, voiceBriefing, voiceOrderRequest } from "@/lib/voice";
+import { greeting, voiceAssistant, voiceBriefing, voiceOrderRequest } from "@/lib/voice";
 import { seedData } from "@/lib/seed";
 
 const db = seedData(new Date("2026-11-04T17:00:00Z"));
@@ -60,5 +60,18 @@ describe("the assistant", () => {
     expect(built.request).toMatchObject({ customerName: "Sam", pickupTime: "18:00" });
     expect(built.request?.lines[0].quantity).toBe(2);
     expect(voiceOrderRequest({ items: [{ name: "lobster", quantity: 1 }] }, menu, days)).toHaveProperty("error");
+  });
+});
+
+describe("the greeting", () => {
+  it("uses the approved wording with the bar's name", () => {
+    expect(voiceAssistant(bar, data, now, days, "https://example.com").firstMessage).toBe(
+      "Hey, thanks for calling Pub 78! I can help with tonight's specials, our hours, upcoming events, or getting a food order started. What can I do for you?",
+    );
+  });
+  it("leaves out ordering when the bar can't take orders", () => {
+    expect(greeting("Pub 78", false)).toBe(
+      "Hey, thanks for calling Pub 78! I can help with tonight's specials, our hours, or upcoming events. What can I do for you?",
+    );
   });
 });
