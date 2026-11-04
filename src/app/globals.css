@@ -178,7 +178,6 @@ ul, ol { list-style: none; margin: 0; padding: 0; }
 /* Swipeable strip on phones, a grid on wider screens. */
 .photos { display: grid; grid-auto-flow: column; grid-auto-columns: 85%; gap: 0.75rem; overflow-x: auto; scroll-snap-type: x mandatory; padding-bottom: 0.5rem; }
 .photos li { scroll-snap-align: start; }
-#menu .photos { margin-bottom: 1.75rem; }
 .photos img { display: block; width: 100%; aspect-ratio: 4 / 3; object-fit: cover; object-position: center 35%; border-radius: 16px; background: var(--line); }
 .photo-open { display: block; width: 100%; padding: 0; border: 0; background: none; cursor: zoom-in; border-radius: 16px; }
 .photo-open img { transition: transform 0.2s ease; }
@@ -204,10 +203,21 @@ ul, ol { list-style: none; margin: 0; padding: 0; }
 .special h3 { font-size: 1.75rem; text-transform: uppercase; }
 .special-price { font-weight: 600; color: var(--accent); }
 
-.menu { display: grid; grid-template-columns: repeat(auto-fit, minmax(18rem, 1fr)); gap: 2rem 3rem; }
-.menu-group ul { display: grid; gap: 1rem; }
+/* The menu flows into newspaper-style columns so short sections fill the gaps
+   beside long ones. Each item: name and price on top, description with the Add
+   button beside it underneath. */
+.menu { columns: 1; column-gap: 2.5rem; }
+@media (min-width: 40rem) { .menu { columns: 2; } }
+@media (min-width: 60rem) { .menu { columns: 3; } }
+.menu-group { margin-bottom: 1.5rem; }
+.menu-group h3 { break-after: avoid; margin-bottom: 0.5rem; }
+.menu-group:not(:has(li:nth-child(5))) { break-inside: avoid; } /* keep short sections in one column */
+.menu-group ul { display: grid; gap: 0; }
+.menu-item { break-inside: avoid; display: grid; grid-template-columns: 1fr auto; column-gap: 0.75rem; padding: 0.6rem 0; border-top: 1px solid var(--line); }
+.menu-item > * { grid-column: 1; }
+.menu-item p { font-size: 0.9rem; line-height: 1.4; margin-top: 0.15rem; }
 .menu-line { display: flex; align-items: baseline; gap: 0.5rem; }
-.menu-name { font-weight: 600; min-width: 0; }
+.menu-name { font-weight: 600; min-width: 0; line-height: 1.3; }
 .menu-dots { flex: 1; border-bottom: 1px dotted var(--line); transform: translateY(-4px); }
 .menu-price { font-variant-numeric: tabular-nums; }
 .sold-out .menu-name { text-decoration: line-through; color: var(--muted); }
@@ -215,7 +225,9 @@ ul, ol { list-style: none; margin: 0; padding: 0; }
 
 /* Ordering from the menu: Add buttons, a cart bar, and a checkout sheet. */
 .order-intro { color: var(--muted); margin-bottom: 1.5rem; max-width: 40rem; }
-.menu-order { margin-top: 0.5rem; }
+.menu-item > .menu-order { grid-column: 2; grid-row: 1 / span 2; align-self: center; }
+.menu-order .add-button { min-height: 36px; padding: 0 0.85rem; font-size: 0.85rem; }
+.menu-order .stepper button { min-height: 36px; min-width: 36px; }
 .add-button, .stepper button {
   min-height: 40px; min-width: 40px; padding: 0 1rem; border-radius: 999px;
   border: 1px solid var(--accent); background: transparent; color: var(--accent);
