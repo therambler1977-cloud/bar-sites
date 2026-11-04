@@ -64,14 +64,8 @@ describe("the assistant", () => {
 });
 
 describe("the greeting", () => {
-  it("uses the approved wording with the bar's name", () => {
-    expect(voiceAssistant(bar, data, now, days, "https://example.com").firstMessage).toBe(
-      "Hey, thanks for calling Pub 78! I can help with tonight's specials, our hours, upcoming events, or getting a food order started. What can I do for you?",
-    );
-  });
-  it("leaves out ordering when the bar can't take orders", () => {
-    expect(greeting("Pub 78", false)).toBe(
-      "Hey, thanks for calling Pub 78! I can help with tonight's specials, our hours, or upcoming events. What can I do for you?",
-    );
+  it("is short and uses the bar's name", () => {
+    expect(voiceAssistant(bar, data, now, days, "https://example.com").firstMessage).toBe("Pub 78! How can I help you?");
+    expect(greeting("The Tap")).toBe("The Tap! How can I help you?");
   });
 });
