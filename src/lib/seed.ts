@@ -9,6 +9,35 @@ const BAR_ID = "demo-bar";
 const PUB78_ID = "pub-78";
 const TIMEZONE = "America/Chicago";
 
+// Pub 78's weekly events (per Zach, 2026-11-04). Each is listed every week from its
+// first date through WEEKS_AHEAD weeks past today, so the demo calendar never runs dry.
+const PUB78_WEEKLY = [
+  { title: "Open Mic/Jam with Alex Hamer", firstDate: "2026-11-04", startTime: "20:00", endTime: "23:00" },
+  { title: "Singo hosted by Katie Redmond", firstDate: "2026-11-05", startTime: "19:00", endTime: "22:00" },
+];
+const WEEKS_AHEAD = 8;
+
+function pub78WeeklyEvents(today: string): BarEvent[] {
+  const until = addDays(today, WEEKS_AHEAD * 7);
+  const events: BarEvent[] = [];
+  for (const weekly of PUB78_WEEKLY) {
+    for (let date = weekly.firstDate; date <= until; date = addDays(date, 7)) {
+      events.push({
+        id: `pub78-weekly-${weekly.firstDate}-${date}`,
+        barId: PUB78_ID,
+        title: weekly.title,
+        date,
+        startTime: weekly.startTime,
+        endTime: weekly.endTime,
+        description: "",
+        cover: null,
+        googlePostName: null,
+      });
+    }
+  }
+  return events;
+}
+
 // Concept demo for a pitch to Pub 78 (Brookfield, IL). Real menu, hours, and
 // October 2026 events and specials. Served only via DEFAULT_BAR_SLUG=pub-78 or the
 // pub78.localhost domain, never on the bar's real domain.
@@ -170,6 +199,7 @@ export function seedData(now = new Date()): Database {
       ...pub78Events.map(
         (event, i): BarEvent => ({ ...event, id: `pub78-event-${i + 1}`, barId: PUB78_ID, googlePostName: null }),
       ),
+      ...pub78WeeklyEvents(today),
     ],
     specials: [
       {
