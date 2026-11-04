@@ -46,6 +46,8 @@ export interface Bar {
   // Ordering built into the site. "demo" keeps orders on the site only (pay at pickup);
   // "clover" also sends each order to the bar's Clover POS. null/missing = off.
   onlineOrdering?: "demo" | "clover" | null;
+  // Vapi voice for the "Talk to us" assistant (see docs.vapi.ai/providers/voice/vapi-voices). Missing = Clara.
+  voiceId?: string | null;
   smsNumber: string | null; // Twilio number the owner texts updates to
   ownerPhones: string[]; // numbers allowed to text updates, E.164
   adminPasswordHash: string; // scrypt, see auth.ts

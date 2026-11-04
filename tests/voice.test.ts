@@ -68,4 +68,8 @@ describe("the greeting", () => {
     expect(voiceAssistant(bar, data, now, days, "https://example.com").firstMessage).toBe("Pub 78! How can I help you?");
     expect(greeting("The Tap")).toBe("The Tap! How can I help you?");
   });
+  it("uses a calm female voice unless the bar picks another", () => {
+    expect(voiceAssistant(bar, data, now, days, "https://example.com").voice.voiceId).toBe("Clara");
+    expect(voiceAssistant({ ...bar, voiceId: "Zoe" }, data, now, days, "https://example.com").voice.voiceId).toBe("Zoe");
+  });
 });

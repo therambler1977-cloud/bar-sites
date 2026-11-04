@@ -41,6 +41,7 @@ export function voiceBriefing(bar: Bar, data: BarData, now: LocalNow, days: Pick
     "",
     "How to talk:",
     "- This is a spoken conversation. Keep answers short: one or two sentences, no lists or symbols.",
+    "- Speak calmly and warmly, at an easy, unhurried pace, like a seasoned bartender who has worked here for years.",
     "- Say prices like \"twelve dollars\" and times like \"five thirty\".",
     "- Only use the facts below. If you don't know something, say so and suggest calling the bar.",
     "- Never make up menu items, prices, bands, or hours.",
@@ -102,6 +103,9 @@ export function voiceBriefing(bar: Bar, data: BarData, now: LocalNow, days: Pick
   return lines.join("\n");
 }
 
+/** A calm, adult female voice, the default for every bar. */
+export const DEFAULT_VOICE = "Clara";
+
 /** What the assistant says when the call connects. */
 export function greeting(barName: string) {
   return `${barName}! How can I help you?`;
@@ -159,7 +163,7 @@ export function voiceAssistant(bar: Bar, data: BarData, now: LocalNow, days: Pic
           : []),
       ],
     },
-    voice: { provider: "vapi" as const, voiceId: "Elliot" },
+    voice: { provider: "vapi" as const, voiceId: bar.voiceId || DEFAULT_VOICE },
   };
 }
 
