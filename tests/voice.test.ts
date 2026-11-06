@@ -64,9 +64,13 @@ describe("the assistant", () => {
 });
 
 describe("the greeting", () => {
-  it("is short and uses the bar's name", () => {
-    expect(voiceAssistant(bar, data, now, days, "https://example.com").firstMessage).toBe("Pub 78! How can I help you?");
-    expect(greeting("The Tap")).toBe("The Tap! How can I help you?");
+  it("says it's automated and lists what it can do", () => {
+    expect(voiceAssistant(bar, data, now, days, "https://example.com").firstMessage).toBe(
+      "Hi, you've reached Pub 78's automated assistant. I can tell you about the bar, upcoming events, and specials, take a food order, or help you reach someone at the bar. How can I help?",
+    );
+    expect(greeting("The Tap", false)).toBe(
+      "Hi, you've reached The Tap's automated assistant. I can tell you about the bar, upcoming events, and specials, or help you reach someone at the bar. How can I help?",
+    );
   });
   it("uses a calm female voice unless the bar picks another", () => {
     expect(voiceAssistant(bar, data, now, days, "https://example.com").voice.voiceId).toBe("Clara");
