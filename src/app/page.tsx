@@ -20,7 +20,6 @@ import {
 } from "@/lib/schedule";
 import { barJsonLd } from "@/lib/structured-data";
 import type { BarEvent, MenuItem, Weekday } from "@/lib/types";
-import { PhotoGallery } from "./photo-gallery";
 import { PhotoSection } from "./photo-section";
 import { VoiceButton } from "./voice-button";
 import { voiceAssistant } from "@/lib/voice";
@@ -108,7 +107,7 @@ export default async function BarHome() {
   }
 
   // Links for the header, in page order, only for sections that will show.
-  const photoCount = musicPhotos.length + venuePhotos.length;
+  const photoCount = musicPhotos.length + venuePhotos.length + foodPhotos.length;
   const sections = [
     ["menu", "Menu", categories.size > 0],
     ["events", "Events", true],
@@ -224,7 +223,6 @@ export default async function BarHome() {
         {categories.size > 0 && (
           <section className="wrap" id="menu" aria-labelledby="menu-heading">
             <h2 id="menu-heading">Menu</h2>
-            {foodPhotos.length > 0 && <PhotoGallery photos={foodPhotos} />}
             <MenuOrdering
               categories={[...categories]}
               ordering={
@@ -292,6 +290,7 @@ export default async function BarHome() {
               groups={[
                 { label: "Live music", photos: musicPhotos },
                 { label: "The bar", photos: venuePhotos },
+                { label: "Food", photos: foodPhotos },
               ]}
             />
           </section>
