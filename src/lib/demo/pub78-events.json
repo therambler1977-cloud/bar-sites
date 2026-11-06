@@ -167,5 +167,14 @@
     "endTime": "23:00",
     "description": "",
     "cover": null
+  },
+  {
+    "title": "Live Music: Tavern Style",
+    "genre": "Classic Rock & Barroom Favorites",
+    "date": "2026-11-07",
+    "startTime": "20:00",
+    "endTime": "23:00",
+    "description": "",
+    "cover": null
   }
 ]
