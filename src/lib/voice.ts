@@ -42,6 +42,7 @@ export function voiceBriefing(bar: Bar, data: BarData, now: LocalNow, days: Pick
     "How to talk:",
     "- This is a spoken conversation. Keep answers short: one or two sentences, no lists or symbols.",
     "- Speak calmly and warmly, at an easy, unhurried pace, like a seasoned bartender who has worked here for years.",
+    `- If the caller wants to talk to a person, you can't transfer the call. Give them the bar's number, ${bar.phone}, and mention when the bar is open.`,
     "- Say prices like \"twelve dollars\" and times like \"five thirty\".",
     "- Only use the facts below. If you don't know something, say so and suggest calling the bar.",
     "- Never make up menu items, prices, bands, or hours.",
@@ -107,8 +108,11 @@ export function voiceBriefing(bar: Bar, data: BarData, now: LocalNow, days: Pick
 export const DEFAULT_VOICE = "Clara";
 
 /** What the assistant says when the call connects. */
-export function greeting(barName: string) {
-  return `${barName}! How can I help you?`;
+export function greeting(barName: string, canOrder: boolean) {
+  const help = canOrder
+    ? "tell you about the bar, upcoming events, and specials, take a food order, or help you reach someone at the bar"
+    : "tell you about the bar, upcoming events, and specials, or help you reach someone at the bar";
+  return `Hi, you've reached ${barName}'s automated assistant. I can ${help}. How can I help?`;
 }
 
 /** Vapi assistant settings for a browser call. */
@@ -116,7 +120,7 @@ export function voiceAssistant(bar: Bar, data: BarData, now: LocalNow, days: Pic
   const canOrder = Boolean(bar.onlineOrdering) && days.length > 0;
   return {
     name: `${bar.name} assistant`.slice(0, 40),
-    firstMessage: greeting(bar.name),
+    firstMessage: greeting(bar.name, canOrder),
     maxDurationSeconds: 600,
     model: {
       provider: "anthropic" as const,
