@@ -38,6 +38,8 @@ export default async function EventsPage({
               <input id="endTime" name="endTime" type="time" defaultValue={editing?.endTime ?? ""} />
             </div>
           </div>
+          <label htmlFor="genre">Music style (optional)</label>
+          <input id="genre" name="genre" placeholder="Country, Classic rock" defaultValue={editing?.genre ?? ""} />
           <label htmlFor="cover">Cover (optional)</label>
           <input id="cover" name="cover" placeholder="$5 or Free" defaultValue={editing?.cover ?? ""} />
           <label htmlFor="description">Details (optional)</label>
@@ -59,6 +61,7 @@ export default async function EventsPage({
                 <strong>{e.title}</strong>
                 <p className="muted">
                   {formatDate(e.date)} · {formatTime(e.startTime)}
+                  {e.genre ? ` · ${e.genre}` : ""}
                   {e.cover ? ` · ${e.cover}` : ""}
                   {e.googlePostName ? " · On Google" : ""}
                 </p>

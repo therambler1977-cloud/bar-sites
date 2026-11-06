@@ -53,6 +53,7 @@ function eventItem(e: BarEvent) {
         <h3>{e.title}</h3>
         <p className="event-meta">
           {formatDate(e.date)} · {timeRange(e.startTime, e.endTime)}
+          {e.genre ? ` · ${e.genre}` : ""}
           {e.cover ? ` · ${e.cover}` : ""}
         </p>
         {e.description && <p className="muted">{e.description}</p>}

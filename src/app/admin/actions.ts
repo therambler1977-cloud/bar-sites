@@ -49,6 +49,7 @@ export async function saveEvent(form: FormData) {
     endTime: optional(form, "endTime"),
     description: text(form, "description"),
     cover: optional(form, "cover"),
+    genre: optional(form, "genre"),
   };
   const id = text(form, "id");
   if (id) await store.update("events", bar.id, id, input);

@@ -29,7 +29,7 @@ function googleTime(time: string): GoogleTime {
 }
 
 export function eventPost(bar: Pick<Bar, "phone">, event: BarEvent) {
-  const details = [event.description, event.cover ? `Cover: ${event.cover}` : ""]
+  const details = [event.genre ? `${event.genre} music.` : "", event.description, event.cover ? `Cover: ${event.cover}` : ""]
     .filter(Boolean)
     .join(" ");
   return {
