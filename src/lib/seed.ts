@@ -11,8 +11,9 @@ const TIMEZONE = "America/Chicago";
 
 // Pub 78's weekly events (per Zach, 2026-11-04). Each is listed every week from its
 // first date through WEEKS_AHEAD weeks past today, so the demo calendar never runs dry.
-const PUB78_WEEKLY = [
-  { title: "Open Mic/Jam with Alex Hamer", firstDate: "2026-11-04", startTime: "20:00", endTime: "23:00" },
+const PUB78_WEEKLY: { title: string; firstDate: string; startTime: string; endTime: string; skip?: string[] }[] = [
+  // No open mic on Nov 25: Easily Distracted plays that Wednesday (November flyer).
+  { title: "Open Mic/Jam with Alex Hamer", firstDate: "2026-11-04", startTime: "20:00", endTime: "23:00", skip: ["2026-11-25"] },
   { title: "Singo hosted by Katie Redmond", firstDate: "2026-11-05", startTime: "19:00", endTime: "22:00" },
 ];
 const WEEKS_AHEAD = 8;
@@ -22,6 +23,7 @@ function pub78WeeklyEvents(today: string): BarEvent[] {
   const events: BarEvent[] = [];
   for (const weekly of PUB78_WEEKLY) {
     for (let date = weekly.firstDate; date <= until; date = addDays(date, 7)) {
+      if (weekly.skip?.includes(date)) continue;
       events.push({
         id: `pub78-weekly-${weekly.firstDate}-${date}`,
         barId: PUB78_ID,
