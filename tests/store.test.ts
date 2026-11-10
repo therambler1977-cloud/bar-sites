@@ -12,9 +12,10 @@ describe("Redis demo store", () => {
     vi.stubEnv("KV_REST_API_TOKEN", "token");
     const kv = new Map<string, string>();
     vi.stubGlobal("fetch", async (_url: string, init: RequestInit) => {
-      const [cmd, key, value] = JSON.parse(String(init.body)) as string[];
-      if (cmd === "SET") kv.set(key, value);
-      return Response.json({ result: cmd === "GET" ? kv.get(key) ?? null : "OK" });
+      const [cmd, ...args] = JSON.parse(String(init.body)) as string[];
+      if (cmd === "SET") kv.set(args[0], args[1]);
+      if (cmd === "MGET") return Response.json({ result: args.map((k) => kv.get(k) ?? null) });
+      return Response.json({ result: cmd === "GET" ? kv.get(args[0]) ?? null : "OK" });
     });
 
     const first = await getStore();

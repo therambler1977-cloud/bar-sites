@@ -13,6 +13,7 @@ import type {
   Special,
 } from "./types";
 import { seedData } from "./seed";
+import { syncSeed, withoutVolatile } from "./seed-sync";
 
 export interface Collections {
   events: BarEvent;
@@ -223,6 +224,25 @@ export function redisConfig(): { url: string; token: string } | null {
 }
 
 const REDIS_KEY = "bar-sites:db";
+// The seed data the saved database was last synced with (see syncSeed).
+const REDIS_SEED_KEY = "bar-sites:seed";
+
+/** Applies seed data changes from the repo to a saved database; `changed` says whether to save. */
+let seedCache: { key: string; fresh: Database; seed: Database } | null = null;
+
+function refreshFromSeed(saved: Database, previous: Database | null) {
+  // The seed only changes by day (weekly events), and building it hashes passwords,
+  // so build it once per hour per server instance.
+  const key = new Date().toISOString().slice(0, 13);
+  if (seedCache?.key !== key) {
+    const built = seedData();
+    seedCache = { key, fresh: built, seed: withoutVolatile(built) };
+  }
+  const { fresh, seed } = seedCache;
+  if (previous && JSON.stringify(previous) === JSON.stringify(seed)) return { db: saved, seed, changed: false };
+  const db = syncSeed(saved, fresh, previous);
+  return { db, seed, changed: true };
+}
 
 async function redis(config: { url: string; token: string }, command: string[]): Promise<unknown> {
   const res = await fetch(config.url, {
@@ -257,10 +277,18 @@ export async function getStore(): Promise<Store> {
     const save = async (db: Database) => {
       await redis(kv, ["SET", REDIS_KEY, JSON.stringify(db)]);
     };
-    const saved = await redis(kv, ["GET", REDIS_KEY]);
-    if (typeof saved === "string") return new MemoryStore(JSON.parse(saved), save);
-    const db = seedData();
-    await save(db);
+    const [saved, savedSeed] = (await redis(kv, ["MGET", REDIS_KEY, REDIS_SEED_KEY])) as (string | null)[];
+    if (typeof saved !== "string") {
+      const db = seedData();
+      await save(db);
+      await redis(kv, ["SET", REDIS_SEED_KEY, JSON.stringify(withoutVolatile(db))]);
+      return new MemoryStore(db, save);
+    }
+    const { db, seed, changed } = refreshFromSeed(JSON.parse(saved), savedSeed ? JSON.parse(savedSeed) : null);
+    if (changed) {
+      await save(db);
+      await redis(kv, ["SET", REDIS_SEED_KEY, JSON.stringify(seed)]);
+    }
     return new MemoryStore(db, save);
   }
   // Re-read the file on every request: Next.js may serve pages and actions from
@@ -274,11 +302,21 @@ export async function getStore(): Promise<Store> {
     await fs.mkdir(path.dirname(file), { recursive: true });
     await fs.writeFile(file, JSON.stringify(db, null, 2));
   };
+  const seedFile = path.join(dir, "seed.json");
+  const read = async (f: string) => JSON.parse(await fs.readFile(f, "utf8")) as Database;
+  let saved: Database;
   try {
-    return new MemoryStore(JSON.parse(await fs.readFile(file, "utf8")), save);
+    saved = await read(file);
   } catch {
     const db = seedData();
     await save(db);
+    await fs.writeFile(seedFile, JSON.stringify(withoutVolatile(db)));
     return new MemoryStore(db, save);
   }
+  const { db, seed, changed } = refreshFromSeed(saved, await read(seedFile).catch(() => null));
+  if (changed) {
+    await save(db);
+    await fs.writeFile(seedFile, JSON.stringify(seed));
+  }
+  return new MemoryStore(db, save);
 }
