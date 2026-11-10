@@ -64,12 +64,32 @@ describe("the assistant", () => {
 });
 
 describe("the greeting", () => {
-  it("says it's automated and lists what it can do", () => {
-    expect(voiceAssistant(bar, data, now, days, "https://example.com").firstMessage).toBe(
+  const at = (date: string, weekday: 0 | 1 | 2 | 3 | 4 | 5 | 6, hour: number) => {
+    const t = { date, weekday, minutes: hour * 60 };
+    return greeting(bar, [], t, pickupDays(bar, [], t));
+  };
+  it("lists everything while the bar and kitchen are open", () => {
+    expect(at("2026-11-04", 3, 18)).toBe(
       "Hi, you've reached Pub 78's automated assistant. I can tell you about the bar, upcoming events, and specials, take a food order, or help you reach someone at the bar. How can I help?",
     );
-    expect(greeting("The Tap", false)).toBe(
-      "Hi, you've reached The Tap's automated assistant. I can tell you about the bar, upcoming events, and specials, or help you reach someone at the bar. How can I help?",
+  });
+  it("says when the kitchen is closed but the bar is open", () => {
+    expect(at("2026-11-04", 3, 22)).toBe(
+      "Hi, you've reached Pub 78's automated assistant. The bar is open until midnight, and our kitchen is closed for the night. I can tell you about upcoming events and specials, set up a food order for pickup tomorrow, or help you reach someone at the bar. How can I help?",
+    );
+  });
+  it("says when the bar is closed and when it opens", () => {
+    expect(at("2026-11-04", 3, 15)).toBe(
+      "Hi, you've reached Pub 78's automated assistant. We're closed right now and we open today at 4 p.m. I can tell you about our hours, upcoming events, and specials, or set up a pickup order for later today. How can I help?",
+    );
+    expect(at("2026-11-02", 1, 18)).toBe(
+      "Hi, you've reached Pub 78's automated assistant. We're closed right now and we open Wednesday at 4 p.m. I can tell you about our hours, upcoming events, and specials, or set up a pickup order for Wednesday. How can I help?",
+    );
+  });
+  it("leaves out ordering when the bar can't take orders", () => {
+    const t = { date: "2026-11-04", weekday: 3 as const, minutes: 18 * 60 };
+    expect(greeting({ ...bar, onlineOrdering: null }, [], t, pickupDays(bar, [], t))).toBe(
+      "Hi, you've reached Pub 78's automated assistant. I can tell you about the bar, upcoming events, and specials, or help you reach someone at the bar. How can I help?",
     );
   });
   it("uses a calm female voice unless the bar picks another", () => {
