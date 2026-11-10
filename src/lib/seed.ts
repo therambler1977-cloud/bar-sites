@@ -18,6 +18,11 @@ const PUB78_WEEKLY: { title: string; firstDate: string; startTime: string; endTi
 ];
 const WEEKS_AHEAD = 8;
 
+function pub78EventId(event: { date: string; title: string }): string {
+  const slug = event.title.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "");
+  return `pub78-event-${event.date}-${slug}`;
+}
+
 function pub78WeeklyEvents(today: string): BarEvent[] {
   const until = addDays(today, WEEKS_AHEAD * 7);
   const events: BarEvent[] = [];
@@ -198,8 +203,10 @@ export function seedData(now = new Date()): Database {
         cover: "Free",
         googlePostName: null,
       },
+      // Ids come from the date and title, not the list position, so adding an event
+      // to the JSON doesn't change the ids of the ones after it.
       ...pub78Events.map(
-        (event, i): BarEvent => ({ ...event, id: `pub78-event-${i + 1}`, barId: PUB78_ID, googlePostName: null }),
+        (event): BarEvent => ({ ...event, id: pub78EventId(event), barId: PUB78_ID, googlePostName: null }),
       ),
       ...pub78WeeklyEvents(today),
     ],
