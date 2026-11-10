@@ -179,7 +179,7 @@
   },
   {
     "title": "Live Music: Wannabe Weekenders",
-    "genre": null,
+    "genre": "Jazz, Blues and Rock & Roll",
     "date": "2026-11-13",
     "startTime": "20:00",
     "endTime": "23:00",
@@ -188,10 +188,19 @@
   },
   {
     "title": "Live Music: Wildwood Country",
-    "genre": null,
+    "genre": "Country",
     "date": "2026-11-14",
     "startTime": "20:00",
     "endTime": "23:00",
+    "description": "",
+    "cover": null
+  },
+  {
+    "title": "Holiday Crafts and Painting with Rad Canvas",
+    "genre": null,
+    "date": "2026-11-15",
+    "startTime": "13:00",
+    "endTime": "17:00",
     "description": "",
     "cover": null
   },
