@@ -68,6 +68,7 @@ export interface BarEvent {
   endTime: string | null;
   description: string;
   cover: string | null; // e.g. "$5" or "Free"
+  genre?: string | null; // style of music for live acts, e.g. "Country"
   googlePostName: string | null;
 }
 

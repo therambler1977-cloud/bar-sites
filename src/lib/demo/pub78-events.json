@@ -158,5 +158,86 @@
     "endTime": "23:00",
     "description": "",
     "cover": null
+  },
+  {
+    "title": "Live Music: Trailer Park Twisters",
+    "genre": "Country",
+    "date": "2026-11-06",
+    "startTime": "20:00",
+    "endTime": "23:00",
+    "description": "",
+    "cover": null
+  },
+  {
+    "title": "Live Music: Tavern Style",
+    "genre": "Classic Rock & Barroom Favorites",
+    "date": "2026-11-07",
+    "startTime": "20:00",
+    "endTime": "23:00",
+    "description": "",
+    "cover": null
+  },
+  {
+    "title": "Live Music: Wannabe Weekenders",
+    "genre": null,
+    "date": "2026-11-13",
+    "startTime": "20:00",
+    "endTime": "23:00",
+    "description": "",
+    "cover": null
+  },
+  {
+    "title": "Live Music: Wildwood Country",
+    "genre": null,
+    "date": "2026-11-14",
+    "startTime": "20:00",
+    "endTime": "23:00",
+    "description": "",
+    "cover": null
+  },
+  {
+    "title": "Live Music: 3 Piece",
+    "genre": null,
+    "date": "2026-11-20",
+    "startTime": "20:00",
+    "endTime": "23:00",
+    "description": "",
+    "cover": null
+  },
+  {
+    "title": "Live Music: Banahan Road",
+    "genre": null,
+    "date": "2026-11-21",
+    "startTime": "20:00",
+    "endTime": "23:00",
+    "description": "",
+    "cover": null
+  },
+  {
+    "title": "Live Music: Easily Distracted",
+    "genre": null,
+    "date": "2026-11-25",
+    "startTime": "20:00",
+    "endTime": "23:00",
+    "description": "",
+    "cover": null
+  },
+  {
+    "title": "Live Music: Abby Kasch",
+    "genre": null,
+    "date": "2026-11-27",
+    "startTime": "20:00",
+    "endTime": "23:00",
+    "description": "",
+    "cover": null
+  },
+  {
+    "title": "Live Music: Bryce Gunner & Buckshot",
+    "genre": null,
+    "date": "2026-11-28",
+    "startTime": "20:00",
+    "endTime": "23:00",
+    "description": "",
+    "cover": null
   }
 ]

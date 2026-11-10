@@ -75,7 +75,7 @@ export function voiceBriefing(bar: Bar, data: BarData, now: LocalNow, days: Pick
   lines.push("", "Upcoming live music and events:");
   if (events.length === 0) lines.push("- Nothing is on the calendar yet. Suggest checking the website or Facebook.");
   for (const e of events) {
-    lines.push(`- ${formatDate(e.date)} at ${formatTime(e.startTime)}: ${e.title}${e.cover ? `, cover ${e.cover}` : ""}. ${e.description}`.trim());
+    lines.push(`- ${formatDate(e.date)} at ${formatTime(e.startTime)}: ${e.title}${e.genre ? ` (${e.genre})` : ""}${e.cover ? `, cover ${e.cover}` : ""}. ${e.description}`.trim());
   }
 
   lines.push("", "Menu (name, price, description):");
