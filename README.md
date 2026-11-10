@@ -30,7 +30,7 @@ npm run build
 
 ## Demo on Vercel
 
-Import the repo into Vercel and set two environment variables: `SESSION_SECRET` (any long random string) and `DEFAULT_BAR_SLUG=pub-78` (or `rusty-anchor`). Without Supabase, the demo data lives in the server's temp folder, so changes made in the admin can reset when Vercel restarts the server. That's fine for a pitch, but not for a real bar.
+Import the repo into Vercel and set two environment variables: `SESSION_SECRET` (any long random string) and `DEFAULT_BAR_SLUG=pub-78` (or `rusty-anchor`). Then, in the Vercel project's **Storage** tab, add **Upstash for Redis** (free plan) and connect it to the project. That sets `KV_REST_API_URL` and `KV_REST_API_TOKEN`, and the demo keeps its data there, seeded from the sample data on first use. Without it, the data lives in each server instance's temp folder, so admin edits may not show up or may reset, and the admin shows a warning. To reset the demo, delete the `bar-sites:db` key in the Upstash console.
 
 ## Going live
 
@@ -51,7 +51,7 @@ All settings are listed in `.env.example`.
 | Reading owner texts with Claude | `src/lib/parse-text.ts` |
 | Publishing changes (site and Google) | `src/lib/publish.ts`, `src/lib/google.ts` |
 | Hours, specials, and event timing | `src/lib/schedule.ts` |
-| Data (Supabase or local file) | `src/lib/store.ts`, `supabase/migrations/` |
+| Data (Supabase, Redis, or local file) | `src/lib/store.ts`, `supabase/migrations/` |
 
 Every date and time is stored in the bar's local time. Bars can set separate kitchen hours, and the site shows whether the kitchen is open. Hours that run past midnight (for example 11am to 2am) are handled.
 

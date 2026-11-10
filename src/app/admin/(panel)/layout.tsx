@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { requireAdminBar } from "@/lib/admin";
-import { getStore } from "@/lib/store";
+import { editsMayNotStick, getStore } from "@/lib/store";
 import { logout } from "../actions";
 
 export const dynamic = "force-dynamic";
@@ -39,7 +39,15 @@ export default async function PanelLayout({ children }: { children: React.ReactN
           ))}
         </nav>
       </header>
-      <main className="admin-main">{children}</main>
+      <main className="admin-main">
+        {editsMayNotStick() && (
+          <p className="panel tip" role="status">
+            Heads up: no database is connected to this site yet, so changes you make here may not
+            show up or may disappear later.
+          </p>
+        )}
+        {children}
+      </main>
     </div>
   );
 }
