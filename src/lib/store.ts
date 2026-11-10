@@ -66,15 +66,13 @@ function matchesBar(bar: Bar, by: BarLookup): boolean {
 export class MemoryStore implements Store {
   constructor(
     private db: Database,
-    private file: string | null = null,
+    private persist: ((db: Database) => Promise<void>) | null = null,
   ) {
     db.orders ??= [];
   }
 
   private async save() {
-    if (!this.file) return;
-    await fs.mkdir(path.dirname(this.file), { recursive: true });
-    await fs.writeFile(this.file, JSON.stringify(this.db, null, 2));
+    await this.persist?.(this.db);
   }
 
   async findBar(by: BarLookup) {
@@ -213,7 +211,40 @@ export class SupabaseStore implements Store {
 
 let supabaseStore: Store | null = null;
 
-/** Supabase when configured, otherwise a local demo database in .data/db.json. */
+/**
+ * Keeps the whole demo database as one JSON value in Redis (Upstash, added to the
+ * Vercel project from its Storage tab), so admin edits survive restarts and every
+ * server instance sees the same data. Uses the REST API, so no extra package.
+ */
+export function redisConfig(): { url: string; token: string } | null {
+  const url = process.env.KV_REST_API_URL ?? process.env.UPSTASH_REDIS_REST_URL;
+  const token = process.env.KV_REST_API_TOKEN ?? process.env.UPSTASH_REDIS_REST_TOKEN;
+  return url && token ? { url: url.replace(/\/$/, ""), token } : null;
+}
+
+const REDIS_KEY = "bar-sites:db";
+
+async function redis(config: { url: string; token: string }, command: string[]): Promise<unknown> {
+  const res = await fetch(config.url, {
+    method: "POST",
+    headers: { Authorization: `Bearer ${config.token}`, "Content-Type": "application/json" },
+    body: JSON.stringify(command),
+    cache: "no-store",
+  });
+  const body = (await res.json()) as { result?: unknown; error?: string };
+  if (!res.ok || body.error) throw new Error(`Redis ${command[0]} failed: ${body.error ?? res.status}`);
+  return body.result;
+}
+
+/**
+ * True when admin edits only live in one server instance's temp folder (Vercel with
+ * no database connected), so they can vanish or not show up. The admin warns about it.
+ */
+export function editsMayNotStick(): boolean {
+  return Boolean(process.env.VERCEL) && !redisConfig() && !process.env.SUPABASE_URL;
+}
+
+/** Supabase when configured, then Redis, otherwise a local demo database in .data/db.json. */
 export async function getStore(): Promise<Store> {
   const url = process.env.SUPABASE_URL;
   const key = process.env.SUPABASE_SERVICE_ROLE_KEY;
@@ -221,18 +252,33 @@ export async function getStore(): Promise<Store> {
     supabaseStore ??= new SupabaseStore(createClient(url, key, { auth: { persistSession: false } }));
     return supabaseStore;
   }
+  const kv = redisConfig();
+  if (kv) {
+    const save = async (db: Database) => {
+      await redis(kv, ["SET", REDIS_KEY, JSON.stringify(db)]);
+    };
+    const saved = await redis(kv, ["GET", REDIS_KEY]);
+    if (typeof saved === "string") return new MemoryStore(JSON.parse(saved), save);
+    const db = seedData();
+    await save(db);
+    return new MemoryStore(db, save);
+  }
   // Re-read the file on every request: Next.js may serve pages and actions from
   // separate workers, and each must see the others' writes.
-  // Vercel's filesystem is read-only apart from the temp folder. Demo edits made there
-  // only last until the server instance restarts; use Supabase for anything real.
+  // Vercel's filesystem is read-only apart from the temp folder, which each server
+  // instance has its own copy of. Without Redis or Supabase, edits made there can land
+  // in one instance and not show up in the next request, or reset on restart.
   const dir = process.env.VERCEL ? path.join(os.tmpdir(), "bar-sites") : path.join(process.cwd(), ".data");
   const file = path.join(dir, "db.json");
-  try {
-    return new MemoryStore(JSON.parse(await fs.readFile(file, "utf8")), file);
-  } catch {
-    const db = seedData();
+  const save = async (db: Database) => {
     await fs.mkdir(path.dirname(file), { recursive: true });
     await fs.writeFile(file, JSON.stringify(db, null, 2));
-    return new MemoryStore(db, file);
+  };
+  try {
+    return new MemoryStore(JSON.parse(await fs.readFile(file, "utf8")), save);
+  } catch {
+    const db = seedData();
+    await save(db);
+    return new MemoryStore(db, save);
   }
 }
